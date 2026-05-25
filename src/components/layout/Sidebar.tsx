@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -12,8 +13,11 @@ import {
   Tag,
   BarChart3,
   Settings,
-  Users,
   ChevronLeft,
+  ChevronDown,
+  TrendingUp,
+  TrendingDown,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -33,8 +37,8 @@ const menuItems = [
     href: "/transaksi",
     icon: Receipt,
     children: [
-      { label: "Pengeluaran", href: "/transaksi/pengeluaran/new" },
-      { label: "Pemasukan", href: "/transaksi/pemasukan/new" },
+      { label: "Pengeluaran", href: "/transaksi/pengeluaran/new", icon: TrendingDown },
+      { label: "Pemasukan", href: "/transaksi/pemasukan/new", icon: TrendingUp },
     ],
   },
   {
@@ -57,7 +61,7 @@ const menuItems = [
     href: "/settings",
     icon: Settings,
     children: [
-      { label: "Users", href: "/settings/users" },
+      { label: "Users", href: "/settings/users", icon: Users },
     ],
   },
 ];
@@ -73,36 +77,59 @@ function SidebarItem({ item, isCollapsed }: SidebarItemProps) {
     pathname === item.href ||
     pathname.startsWith(item.href + "/");
 
+  // Auto-open if any child route is active
+  const isChildActive = item.children?.some(
+    (child) => pathname === child.href
+  );
+  const [isOpen, setIsOpen] = useState(isChildActive);
+
+  // Sync with route changes
+  useEffect(() => {
+    if (isChildActive) setIsOpen(true);
+  }, [isChildActive]);
+
   if (item.children) {
     return (
       <div className="space-y-1">
-        <div
+        <button
+          onClick={() => setIsOpen(!isOpen)}
           className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+            "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
             isActive
               ? "bg-primary/10 text-primary"
               : "text-muted-foreground hover:bg-muted hover:text-foreground"
           )}
         >
           <item.icon className="h-4 w-4 shrink-0" />
-          {!isCollapsed && <span>{item.label}</span>}
-        </div>
-        {!isCollapsed && (
+          {!isCollapsed && (
+            <>
+              <span className="flex-1 text-left">{item.label}</span>
+              <ChevronDown
+                className={cn(
+                  "h-4 w-4 transition-transform",
+                  !isOpen && "-rotate-90"
+                )}
+              />
+            </>
+          )}
+        </button>
+        {!isCollapsed && isOpen && (
           <div className="ml-4 space-y-1">
             {item.children.map((child) => {
-              const isChildActive = pathname === child.href;
+              const isChildItemActive = pathname === child.href;
               return (
                 <Link
                   key={child.href}
                   href={child.href}
                   className={cn(
-                    "block rounded-lg px-3 py-1.5 text-sm transition-colors",
-                    isChildActive
+                    "flex items-center gap-3 rounded-lg px-3 py-1.5 text-sm transition-colors",
+                    isChildItemActive
                       ? "bg-primary/10 text-primary font-medium"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
-                  {child.label}
+                  <child.icon className="h-4 w-4 shrink-0" />
+                  <span>{child.label}</span>
                 </Link>
               );
             })}
