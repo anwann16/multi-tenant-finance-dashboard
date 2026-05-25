@@ -2,11 +2,21 @@
 
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useState } from "react";
 import { ArrowLeft, Pencil, Trash2, MapPin, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useKantor, useDeleteKantor } from "@/hooks/useKantor";
 import UserAssignDialog from "@/components/kantor/UserAssignDialog";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -19,6 +29,7 @@ export default function KantorDetailPage() {
   const id = params.id as string;
   const { data: kantor, isLoading } = useKantor(id);
   const deleteKantor = useDeleteKantor();
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -66,13 +77,7 @@ export default function KantorDetailPage() {
             variant="outline"
             size="sm"
             className="text-destructive hover:text-destructive"
-            onClick={() => {
-              if (confirm("Yakin ingin menghapus kantor ini?")) {
-                deleteKantor.mutate(id, {
-                  onSuccess: () => { toast.success("Kantor dihapus"); router.push("/kantor"); },
-                });
-              }
-            }}
+            onClick={() => setDeleteOpen(true)}
           >
             <Trash2 className="mr-2 h-4 w-4" />Hapus
           </Button>
@@ -115,6 +120,30 @@ export default function KantorDetailPage() {
           <CardContent><p className="text-sm">{kantor.description}</p></CardContent>
         </Card>
       )}
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Kantor</AlertDialogTitle>
+            <AlertDialogDescription>
+              Yakin ingin menghapus <strong>{kantor.name}</strong>? Semua data terkait akan dihapus. Tindakan ini tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-white hover:bg-destructive/90"
+              onClick={() => {
+                deleteKantor.mutate(id, {
+                  onSuccess: () => { toast.success("Kantor dihapus"); router.push("/kantor"); },
+                });
+              }}
+            >
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

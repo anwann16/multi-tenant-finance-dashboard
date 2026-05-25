@@ -15,6 +15,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -35,6 +45,7 @@ export default function UserAssignDialog({ kantorId, users }: UserAssignDialogPr
   const [role, setRole] = useState<"ADMIN_KANTOR" | "FINANCE">("FINANCE");
   const assignMutation = useAssignUser();
   const unassignMutation = useUnassignUser();
+  const [removeTarget, setRemoveTarget] = useState<UserKantorRole | null>(null);
 
   function handleAssign() {
     if (!email) return;
@@ -112,7 +123,7 @@ export default function UserAssignDialog({ kantorId, users }: UserAssignDialogPr
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-destructive hover:text-destructive"
-                      onClick={() => unassignMutation.mutate(ur.id)}
+                      onClick={() => setRemoveTarget(ur)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -123,6 +134,32 @@ export default function UserAssignDialog({ kantorId, users }: UserAssignDialogPr
           )}
         </div>
       </DialogContent>
+
+      <AlertDialog open={!!removeTarget} onOpenChange={(open) => { if (!open) setRemoveTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Yakin ingin menghapus <strong>{removeTarget?.user.name}</strong> dari kantor ini? User tidak akan bisa mengakses kantor ini lagi.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-white hover:bg-destructive/90"
+              onClick={() => {
+                if (removeTarget) {
+                  unassignMutation.mutate(removeTarget.id, {
+                    onSuccess: () => setRemoveTarget(null),
+                  });
+                }
+              }}
+            >
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
