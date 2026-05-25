@@ -11,8 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 
 interface KantorFormProps {
   defaultValues?: Partial<KantorInput>;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   onSubmit: (data: KantorInput) => void;
   isLoading?: boolean;
 }
@@ -31,10 +31,12 @@ export default function KantorForm({ defaultValues, title, description, onSubmit
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
+      {(title || description) && (
+        <CardHeader>
+          {title && <CardTitle>{title}</CardTitle>}
+          {description && <CardDescription>{description}</CardDescription>}
+        </CardHeader>
+      )}
       <CardContent>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
