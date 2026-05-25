@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import bcrypt from "bcryptjs";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
@@ -28,50 +29,42 @@ const defaultPemasukan = [
 ];
 
 async function main() {
+  const DEFAULT_PASSWORD = "password123";
+  const hashedPassword = await bcrypt.hash(DEFAULT_PASSWORD, 12);
+
   // 1. Create users
-  const superadmin = await prisma.user.upsert({
-    where: { email: "superadmin@kantor.com" },
-    update: {},
-    create: {
-      name: "Super Admin",
-      email: "superadmin@kantor.com",
-      role: "ADMIN",
-    },
-  });
-  console.log("Superadmin:", superadmin.id, superadmin.email);
+  const usersData = [
+    { name: "Super Admin", email: "superadmin@kantor.com" },
+    { name: "Admin Utama", email: "admin@kantor.com" },
+    { name: "Andi Kurniawan", email: "andi@kantor.com" },
+    { name: "Sari Dewi", email: "sari@kantor.com" },
+  ];
 
-  const admin = await prisma.user.upsert({
-    where: { email: "admin@kantor.com" },
-    update: {},
-    create: {
-      name: "Admin Utama",
-      email: "admin@kantor.com",
-      role: "ADMIN",
-    },
-  });
-  console.log("Admin:", admin.id, admin.email);
+  const users: { id: string; email: string; name: string }[] = [];
+  for (const u of usersData) {
+    const user = await prisma.user.upsert({
+      where: { email: u.email },
+      update: {},
+      create: { name: u.name, email: u.email, role: "ADMIN" },
+    });
+    users.push(user);
+    console.log("User:", user.name, user.email);
 
-  const finance1 = await prisma.user.upsert({
-    where: { email: "andi@kantor.com" },
-    update: {},
-    create: {
-      name: "Andi Kurniawan",
-      email: "andi@kantor.com",
-      role: "ADMIN",
-    },
-  });
-  console.log("Finance 1:", finance1.id, finance1.email);
+    // Create credential account
+    await prisma.account.upsert({
+      where: { accountId_providerId: { accountId: u.email, providerId: "credential" } },
+      update: {},
+      create: {
+        userId: user.id,
+        accountId: u.email,
+        providerId: "credential",
+        password: hashedPassword,
+      },
+    });
+  }
+  console.log("Accounts with password created for all users");
 
-  const finance2 = await prisma.user.upsert({
-    where: { email: "sari@kantor.com" },
-    update: {},
-    create: {
-      name: "Sari Dewi",
-      email: "sari@kantor.com",
-      role: "ADMIN",
-    },
-  });
-  console.log("Finance 2:", finance2.id, finance2.email);
+  const [superadmin, admin, finance1, finance2] = users;
 
   // 2. Create default kantor
   const kantor = await prisma.kantor.upsert({
