@@ -1,13 +1,22 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  flexRender,
+  type ColumnDef,
+  type SortingState,
+} from "@tanstack/react-table";
+import { useState } from "react";
 import { ArrowUpDown, ArrowUp, ArrowDown, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatCurrency, formatDateShort } from "@/lib/utils";
-import type { TransaksiWithRelations, TransaksiSort } from "@/types/transaksi";
+import type { TransaksiWithRelations } from "@/types/transaksi";
 
 interface TransaksiTableProps {
   data: TransaksiWithRelations[];
@@ -20,25 +29,102 @@ const STATUS_MAP = {
 };
 
 export default function TransaksiTable({ data }: TransaksiTableProps) {
-  const [sort, setSort] = useState<TransaksiSort>({ field: "tanggal", direction: "desc" });
+  const [sorting, setSorting] = useState<SortingState>([{ id: "tanggal", desc: true }]);
 
-  function toggleSort(field: TransaksiSort["field"]) {
-    setSort((prev) => ({
-      field,
-      direction: prev.field === field && prev.direction === "desc" ? "asc" : "desc",
-    }));
-  }
+  const columns: ColumnDef<TransaksiWithRelations>[] = [
+    {
+      accessorKey: "nomorTransaksi",
+      header: "No. Transaksi",
+      cell: ({ row }) => (
+        <span className="font-mono text-xs">{row.original.nomorTransaksi}</span>
+      ),
+      size: 140,
+    },
+    {
+      accessorKey: "tanggal",
+      header: ({ column }) => (
+        <button onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="inline-flex items-center font-medium">
+          Tanggal {column.getIsSorted() === "asc" ? <ArrowUp className="ml-1 h-3 w-3" /> : column.getIsSorted() === "desc" ? <ArrowDown className="ml-1 h-3 w-3" /> : <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />}
+        </button>
+      ),
+      cell: ({ row }) => (
+        <span className="tabular-nums">{formatDateShort(row.original.tanggal)}</span>
+      ),
+    },
+    {
+      accessorKey: "kategori",
+      header: "Kategori",
+      cell: ({ row }) => {
+        const k = row.original.kategori;
+        return (
+          <span className="inline-flex items-center gap-1.5">
+            <span style={{ color: k.color || undefined }}>{k.icon}</span>
+            {k.name}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: "deskripsi",
+      header: "Deskripsi",
+      cell: ({ row }) => (
+        <span className="block max-w-[200px] truncate text-muted-foreground">{row.original.deskripsi}</span>
+      ),
+    },
+    {
+      accessorKey: "nominal",
+      header: ({ column }) => (
+        <button onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="inline-flex items-center font-medium">
+          Nominal {column.getIsSorted() === "asc" ? <ArrowUp className="ml-1 h-3 w-3" /> : column.getIsSorted() === "desc" ? <ArrowDown className="ml-1 h-3 w-3" /> : <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />}
+        </button>
+      ),
+      cell: ({ row }) => {
+        const t = row.original;
+        return (
+          <span className={`text-right font-medium tabular-nums ${t.type === "PEMASUKAN" ? "text-green-600" : "text-destructive"}`}>
+            {t.type === "PEMASUKAN" ? "+" : "-"}{formatCurrency(t.nominal)}
+          </span>
+        );
+      },
+      sortingFn: "basic",
+    },
+    {
+      accessorKey: "metodeBayar",
+      header: "Metode",
+      cell: ({ row }) => <span>{row.original.metodeBayar}</span>,
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const s = STATUS_MAP[row.original.status];
+        return <Badge variant={s.variant}>{s.label}</Badge>;
+      },
+    },
+    {
+      id: "aksi",
+      header: () => <span className="text-right">Aksi</span>,
+      cell: ({ row }) => (
+        <div className="text-right">
+          <Link href={`/transaksi/${row.original.id}`}>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Eye className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+      ),
+      size: 60,
+    },
+  ];
 
-  const sorted = [...data].sort((a, b) => {
-    const dir = sort.direction === "asc" ? 1 : -1;
-    if (sort.field === "nominal") return (a.nominal - b.nominal) * dir;
-    return (new Date(a[sort.field]).getTime() - new Date(b[sort.field]).getTime()) * dir;
+  const table = useReactTable({
+    data,
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   });
-
-  function SortIcon({ field }: { field: TransaksiSort["field"] }) {
-    if (sort.field !== field) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
-    return sort.direction === "asc" ? <ArrowUp className="ml-1 h-3 w-3" /> : <ArrowDown className="ml-1 h-3 w-3" />;
-  }
 
   return (
     <>
@@ -46,58 +132,31 @@ export default function TransaksiTable({ data }: TransaksiTableProps) {
       <div className="hidden rounded-lg border md:block">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-[140px]">No. Transaksi</TableHead>
-              <TableHead>
-                <button onClick={() => toggleSort("tanggal")} className="inline-flex items-center font-medium">
-                  Tanggal <SortIcon field="tanggal" />
-                </button>
-              </TableHead>
-              <TableHead>Kategori</TableHead>
-              <TableHead>Deskripsi</TableHead>
-              <TableHead>
-                <button onClick={() => toggleSort("nominal")} className="inline-flex items-center font-medium">
-                  Nominal <SortIcon field="nominal" />
-                </button>
-              </TableHead>
-              <TableHead>Metode</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Aksi</TableHead>
-            </TableRow>
+            {table.getHeaderGroups().map((hg) => (
+              <TableRow key={hg.id}>
+                {hg.headers.map((h) => (
+                  <TableHead key={h.id} style={{ width: h.getSize() !== 150 ? h.getSize() : undefined }}>
+                    {flexRender(h.column.columnDef.header, h.getContext())}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
           </TableHeader>
           <TableBody>
-            {sorted.length === 0 ? (
+            {table.getRowModel().rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
                   Tidak ada transaksi
                 </TableCell>
               </TableRow>
             ) : (
-              sorted.map((t) => (
-                <TableRow key={t.id}>
-                  <TableCell className="font-mono text-xs">{t.nomorTransaksi}</TableCell>
-                  <TableCell className="tabular-nums">{formatDateShort(t.tanggal)}</TableCell>
-                  <TableCell>
-                    <span className="inline-flex items-center gap-1.5">
-                      <span style={{ color: t.kategori.color || undefined }}>{t.kategori.icon}</span>
-                      {t.kategori.name}
-                    </span>
-                  </TableCell>
-                  <TableCell className="max-w-[200px] truncate text-muted-foreground">{t.deskripsi}</TableCell>
-                  <TableCell className={`text-right font-medium tabular-nums ${t.type === "PEMASUKAN" ? "text-green-600" : "text-destructive"}`}>
-                    {t.type === "PEMASUKAN" ? "+" : "-"}{formatCurrency(t.nominal)}
-                  </TableCell>
-                  <TableCell>{t.metodeBayar}</TableCell>
-                  <TableCell>
-                    <Badge variant={STATUS_MAP[t.status].variant}>{STATUS_MAP[t.status].label}</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Link href={`/transaksi/${t.id}`}>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </TableCell>
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))
             )}
@@ -107,38 +166,41 @@ export default function TransaksiTable({ data }: TransaksiTableProps) {
 
       {/* Mobile */}
       <div className="space-y-2 md:hidden">
-        {sorted.length === 0 ? (
+        {table.getRowModel().rows.length === 0 ? (
           <div className="rounded-xl border p-6 text-center text-sm text-muted-foreground">
             Tidak ada transaksi
           </div>
         ) : (
-          sorted.map((t) => (
-            <Link
-              key={t.id}
-              href={`/transaksi/${t.id}`}
-              className="flex items-center justify-between rounded-xl border p-4 transition-colors hover:bg-muted/50"
-            >
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs text-muted-foreground">{t.nomorTransaksi}</span>
-                  <Badge variant={STATUS_MAP[t.status].variant} className="text-[10px]">{STATUS_MAP[t.status].label}</Badge>
+          table.getRowModel().rows.map((row) => {
+            const t = row.original;
+            return (
+              <Link
+                key={row.id}
+                href={`/transaksi/${t.id}`}
+                className="flex items-center justify-between rounded-xl border p-4 transition-colors hover:bg-muted/50"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs text-muted-foreground">{t.nomorTransaksi}</span>
+                    <Badge variant={STATUS_MAP[t.status].variant} className="text-[10px]">{STATUS_MAP[t.status].label}</Badge>
+                  </div>
+                  <p className="mt-1 truncate text-sm font-medium">{t.deskripsi}</p>
+                  <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                    <span>{t.kategori.icon} {t.kategori.name}</span>
+                    <span>·</span>
+                    <span>{formatDateShort(t.tanggal)}</span>
+                    <span>·</span>
+                    <span>{t.metodeBayar}</span>
+                  </div>
                 </div>
-                <p className="mt-1 truncate text-sm font-medium">{t.deskripsi}</p>
-                <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>{t.kategori.icon} {t.kategori.name}</span>
-                  <span>·</span>
-                  <span>{formatDateShort(t.tanggal)}</span>
-                  <span>·</span>
-                  <span>{t.metodeBayar}</span>
+                <div className="ml-3 shrink-0 text-right">
+                  <p className={`text-sm font-medium tabular-nums ${t.type === "PEMASUKAN" ? "text-green-600" : "text-destructive"}`}>
+                    {t.type === "PEMASUKAN" ? "+" : "-"}{formatCurrency(t.nominal)}
+                  </p>
                 </div>
-              </div>
-              <div className="ml-3 shrink-0 text-right">
-                <p className={`text-sm font-medium tabular-nums ${t.type === "PEMASUKAN" ? "text-green-600" : "text-destructive"}`}>
-                  {t.type === "PEMASUKAN" ? "+" : "-"}{formatCurrency(t.nominal)}
-                </p>
-              </div>
-            </Link>
-          ))
+              </Link>
+            );
+          })
         )}
       </div>
     </>

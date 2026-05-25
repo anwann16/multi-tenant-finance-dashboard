@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ArrowDownUp, Plus } from "lucide-react";
+import { Receipt, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTransaksiList } from "@/hooks/useTransaksi";
 import { useKategoris } from "@/hooks/useKategori";
@@ -49,7 +49,7 @@ export default function TransaksiListPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-            <ArrowDownUp className="h-5 w-5 text-primary" />
+            <Receipt className="h-5 w-5 text-primary" />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Transaksi</h1>
