@@ -12,7 +12,6 @@ import {
 } from "@tanstack/react-table";
 import { useState } from "react";
 import { ArrowUpDown, ArrowUp, ArrowDown, Eye } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatCurrency, formatDateShort } from "@/lib/utils";
@@ -21,12 +20,6 @@ import type { TransaksiWithRelations } from "@/types/transaksi";
 interface TransaksiTableProps {
   data: TransaksiWithRelations[];
 }
-
-const STATUS_MAP = {
-  DRAFT: { label: "Draft", variant: "secondary" as const },
-  CONFIRMED: { label: "Confirmed", variant: "default" as const },
-  CANCELLED: { label: "Cancelled", variant: "destructive" as const },
-};
 
 export default function TransaksiTable({ data }: TransaksiTableProps) {
   const [sorting, setSorting] = useState<SortingState>([{ id: "tanggal", desc: true }]);
@@ -92,14 +85,6 @@ export default function TransaksiTable({ data }: TransaksiTableProps) {
       accessorKey: "metodeBayar",
       header: "Metode",
       cell: ({ row }) => <span>{row.original.metodeBayar}</span>,
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => {
-        const s = STATUS_MAP[row.original.status];
-        return <Badge variant={s.variant}>{s.label}</Badge>;
-      },
     },
     {
       id: "aksi",
@@ -182,7 +167,6 @@ export default function TransaksiTable({ data }: TransaksiTableProps) {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-xs text-muted-foreground">{t.nomorTransaksi}</span>
-                    <Badge variant={STATUS_MAP[t.status].variant} className="text-[10px]">{STATUS_MAP[t.status].label}</Badge>
                   </div>
                   <p className="mt-1 truncate text-sm font-medium">{t.deskripsi}</p>
                   <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">

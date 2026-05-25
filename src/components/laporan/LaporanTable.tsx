@@ -27,7 +27,6 @@ export default function LaporanTable({ data }: LaporanTableProps) {
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Deskripsi</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Kategori</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Metode</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Status</th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground">Nominal</th>
               </tr>
             </thead>
@@ -44,9 +43,6 @@ export default function LaporanTable({ data }: LaporanTableProps) {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">{t.metodeBayar}</td>
-                  <td className="px-4 py-3">
-                    <StatusBadge status={t.status} />
-                  </td>
                   <td className="px-4 py-3 text-right">
                     <span className={`inline-flex items-center gap-1 text-sm font-semibold tabular-nums ${
                       t.type === "PEMASUKAN" ? "text-emerald-600" : "text-rose-600"
@@ -90,23 +86,5 @@ export default function LaporanTable({ data }: LaporanTableProps) {
         </div>
       </CardContent>
     </Card>
-  );
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    CONFIRMED: "bg-emerald-500/10 text-emerald-600",
-    DRAFT: "bg-amber-500/10 text-amber-600",
-    CANCELLED: "bg-rose-500/10 text-rose-600",
-  };
-  const labels: Record<string, string> = {
-    CONFIRMED: "Confirmed",
-    DRAFT: "Draft",
-    CANCELLED: "Cancelled",
-  };
-  return (
-    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${styles[status] || "bg-muted text-muted-foreground"}`}>
-      {labels[status] || status}
-    </span>
   );
 }
