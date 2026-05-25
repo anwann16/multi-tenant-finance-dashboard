@@ -44,14 +44,17 @@ enum NotifType {
   SYSTEM
 }
 
+// --- Better Auth managed tables (no @map) ---
+
 model User {
   id            String   @id @default(uuid()) @db.Uuid
   name          String
   email         String   @unique
-  avatar        String?
+  emailVerified Boolean  @default(false)
+  image         String?
   role          UserRole @default(ADMIN)
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   kantorRoles   KantorUserRole[]
   transaksi     Transaksi[]
@@ -60,179 +63,169 @@ model User {
   sessions      Session[]
   accounts      Account[]
   createdKantors Kantor[]
-
-  @@map("users")
 }
+
+model Session {
+  id            String   @id @default(cuid())
+  userId        String   @db.Uuid
+  expiresAt     DateTime
+  token         String   @unique
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+model Account {
+  id            String   @id @default(cuid())
+  userId        String   @db.Uuid
+  accountId     String
+  providerId    String
+  password      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([accountId, providerId])
+  @@index([userId])
+}
+
+model Verification {
+  id            String   @id @default(cuid())
+  identifier    String
+  value         String
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([identifier, value])
+}
+
+// --- Business tables ---
 
 model Kantor {
   id              String   @id @default(uuid()) @db.Uuid
   name            String
   address         String?
   description     String?
-  pettyCashLimit  Decimal  @default(0) @map("petty_cash_limit") @db.Decimal(15, 2)
-  isActive        Boolean  @default(true) @map("is_active")
-  createdById     String   @map("created_by") @db.Uuid
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  pettyCashLimit  Decimal  @default(0) @db.Decimal(15, 2)
+  isActive        Boolean  @default(true)
+  createdById     String   @db.Uuid
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   createdBy       User     @relation(fields: [createdById], references: [id])
   userRoles       KantorUserRole[]
   transaksi       Transaksi[]
   kategori        Kategori[]
   pettyCashLog    PettyCashLog[]
-
-  @@map("kantor")
 }
 
 model KantorUserRole {
   id        String      @id @default(uuid()) @db.Uuid
-  userId    String      @map("user_id") @db.Uuid
-  kantorId  String      @map("kantor_id") @db.Uuid
+  userId    String      @db.Uuid
+  kantorId  String      @db.Uuid
   role      KantorRole  @default(FINANCE)
-  isActive  Boolean     @default(true) @map("is_active")
-  createdAt DateTime    @default(now()) @map("created_at")
+  isActive  Boolean     @default(true)
+  createdAt DateTime    @default(now())
 
   user      User        @relation(fields: [userId], references: [id])
   kantor    Kantor      @relation(fields: [kantorId], references: [id])
 
   @@unique([userId, kantorId])
-  @@map("user_kantor_roles")
 }
 
 model Kategori {
   id         String        @id @default(uuid()) @db.Uuid
-  kantorId   String        @map("kantor_id") @db.Uuid
+  kantorId   String        @db.Uuid
   name       String
   type       TransaksiType
   icon       String?
   color      String?
-  isDefault  Boolean       @default(false) @map("is_default")
-  isActive   Boolean       @default(true) @map("is_active")
-  createdAt  DateTime      @default(now()) @map("created_at")
+  isDefault  Boolean       @default(false)
+  isActive   Boolean       @default(true)
+  createdAt  DateTime      @default(now())
 
   kantor     Kantor        @relation(fields: [kantorId], references: [id])
   transaksi  Transaksi[]
 
   @@unique([kantorId, name])
-  @@map("kategori")
 }
 
 model Transaksi {
   id               String          @id @default(uuid()) @db.Uuid
-  kantorId         String          @map("kantor_id") @db.Uuid
-  userId           String          @map("user_id") @db.Uuid
-  kategoriId       String          @map("kategori_id") @db.Uuid
+  kantorId         String          @db.Uuid
+  userId           String          @db.Uuid
+  kategoriId       String          @db.Uuid
   type             TransaksiType
-  nomorTransaksi   String          @map("nomor_transaksi") @unique
+  nomorTransaksi   String          @unique
   tanggal          DateTime        @db.Date
   deskripsi        String
   nominal          Decimal         @db.Decimal(15, 2)
-  metodeBayar      MetodeBayar     @map("metode_bayar")
-  rekeningInfo     String?         @map("rekening_info")
+  metodeBayar      MetodeBayar
   status           TransaksiStatus @default(DRAFT)
-  isPettyCash      Boolean         @default(false) @map("is_petty_cash")
-  createdAt        DateTime        @default(now()) @map("created_at")
-  updatedAt        DateTime        @updatedAt @map("updated_at")
+  referenceId      String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 
   kantor           Kantor          @relation(fields: [kantorId], references: [id])
   user             User            @relation(fields: [userId], references: [id])
   kategori         Kategori        @relation(fields: [kategoriId], references: [id])
   bukti            BuktiTransaksi[]
-  pettyCashRef     PettyCashLog[]
+  pettyCashLog     PettyCashLog[]
 
   @@index([kantorId, tanggal])
   @@index([kantorId, type])
-  @@index([status])
-  @@map("transaksi")
 }
 
 model BuktiTransaksi {
-  id           String     @id @default(uuid()) @db.Uuid
-  transaksiId  String     @map("transaksi_id") @db.Uuid
-  fileUrl      String     @map("file_url")
-  fileName     String     @map("file_name")
-  fileType     String     @map("file_type")
-  createdAt    DateTime   @default(now()) @map("created_at")
+  id           String   @id @default(uuid()) @db.Uuid
+  transaksiId  String   @db.Uuid
+  fileName     String
+  fileUrl      String
+  fileSize     Int
+  mimeType     String
+  createdAt    DateTime @default(now())
 
-  transaksi    Transaksi  @relation(fields: [transaksiId], references: [id])
+  transaksi    Transaksi @relation(fields: [transaksiId], references: [id])
 
-  @@map("bukti_transaksi")
+  @@index([transaksiId])
 }
 
 model PettyCashLog {
   id           String        @id @default(uuid()) @db.Uuid
-  kantorId     String        @map("kantor_id") @db.Uuid
+  kantorId     String        @db.Uuid
   type         PettyCashType
   nominal      Decimal       @db.Decimal(15, 2)
   deskripsi    String?
-  referenceId  String?       @map("reference_id") @db.Uuid
-  createdById  String        @map("created_by") @db.Uuid
-  createdAt    DateTime      @default(now()) @map("created_at")
+  referenceId  String?       @db.Uuid
+  createdById  String        @db.Uuid
+  createdAt    DateTime      @default(now())
 
   kantor       Kantor        @relation(fields: [kantorId], references: [id])
   transaksi    Transaksi?    @relation(fields: [referenceId], references: [id])
   createdBy    User          @relation(fields: [createdById], references: [id])
 
   @@index([kantorId, createdAt])
-  @@map("petty_cash_log")
 }
 
 model Notification {
   id           String    @id @default(uuid()) @db.Uuid
-  userId       String    @map("user_id") @db.Uuid
+  userId       String    @db.Uuid
   title        String
   message      String
   type         NotifType
-  isRead       Boolean   @default(false) @map("is_read")
-  referenceId  String?   @map("reference_id") @db.Uuid
-  createdAt    DateTime  @default(now()) @map("created_at")
+  isRead       Boolean   @default(false)
+  referenceId  String?   @db.Uuid
+  createdAt    DateTime  @default(now())
 
   user         User      @relation(fields: [userId], references: [id])
 
   @@index([userId, isRead])
-  @@map("notification")
-}
-
-model Session {
-  id            String   @id @default(uuid()) @db.Uuid
-  userId        String   @map("user_id") @db.Uuid
-  token         String   @unique
-  expiresAt     DateTime @map("expires_at")
-  ipAddress     String?  @map("ip_address")
-  userAgent     String?  @map("user_agent")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@map("sessions")
-}
-
-model Account {
-  id            String   @id @default(uuid()) @db.Uuid
-  userId        String   @map("user_id") @db.Uuid
-  accountId     String   @map("account_id")
-  providerId    String   @map("provider_id")
-  password      String?
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([accountId, providerId])
-  @@index([userId])
-  @@map("accounts")
-}
-
-model Verification {
-  id            String   @id @default(uuid()) @db.Uuid
-  identifier    String
-  value         String
-  expiresAt     DateTime @map("expires_at")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-
-  @@index([identifier, value])
-  @@map("verifications")
 }

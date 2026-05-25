@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import bcrypt from "bcryptjs";
+import { hashPassword } from "better-auth/crypto";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
@@ -30,7 +30,7 @@ const defaultPemasukan = [
 
 async function main() {
   const DEFAULT_PASSWORD = "password123";
-  const hashedPassword = await bcrypt.hash(DEFAULT_PASSWORD, 12);
+  const hashedPassword = await hashPassword(DEFAULT_PASSWORD);
 
   // 1. Create users
   const usersData = [
@@ -49,13 +49,16 @@ async function main() {
     });
     users.push(user);
     console.log("User:", user.name, user.email);
-
-    // Create credential account
-    await prisma.account.upsert({
-      where: { accountId_providerId: { accountId: u.email, providerId: "credential" } },
-      update: {},
-      create: {
-        userId: user.id,
+  }
+  // Create credential accounts with fresh password hashes
+  await prisma.session.deleteMany();
+  await prisma.account.deleteMany();
+  await prisma.verification.deleteMany();
+  for (const u of usersData) {
+    const user = await prisma.user.findUnique({ where: { email: u.email } });
+    await prisma.account.create({
+      data: {
+        userId: user!.id,
         accountId: u.email,
         providerId: "credential",
         password: hashedPassword,

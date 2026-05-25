@@ -57,13 +57,13 @@
 
 ### T1.1 — Auth Backend
 
-- [ ] `src/lib/auth.ts` — Better Auth config (credentials provider + Prisma adapter)
-- [ ] `src/app/api/auth/[[...all]]/route.ts` — Better Auth catch-all route handler
+- [x] `src/lib/auth.ts` — Better Auth config (credentials provider + Prisma adapter)
+- [x] `src/app/api/auth/[[...all]]/route.ts` — Better Auth catch-all route handler
 - [ ] `src/app/api/auth/sign-up/route.ts` — Custom sign-up endpoint (if custom logic needed, otherwise Better Auth handles it)
 - [ ] `src/services/auth.service.ts` — signIn, signUp, getCurrentUser, signOut
-- [ ] Password hashing (bcrypt 12 rounds)
-- [ ] Database session strategy (Better Auth manages sessions via Session/Account tables)
-- [ ] Better Auth middleware integration (better-auth/middleware)
+- [x] Password hashing (bcrypt 12 rounds)
+- [x] Database session strategy (Better Auth manages sessions via Session/Account tables)
+- [x] Better Auth middleware integration (better-auth/middleware)
 - [ ] Unit test: auth.service.test.ts
 
 ### T1.2 — Auth Frontend
