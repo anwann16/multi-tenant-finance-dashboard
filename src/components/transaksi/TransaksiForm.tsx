@@ -170,7 +170,7 @@ export default function TransaksiForm({ kantorId, open, onOpenChange }: Transaks
                 <div className="space-y-2">
                   <Label>Kategori</Label>
                   <Select value={form.watch("kategoriId")} onValueChange={(v) => { if (v) form.setValue("kategoriId", v); }}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Pilih kategori">
                         {(val: string | null) => {
                           const k = kategoris?.find((k) => k.id === val);

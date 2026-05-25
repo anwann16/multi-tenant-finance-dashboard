@@ -22,7 +22,7 @@ function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
   return (
     <SelectPrimitive.Value
       data-slot="select-value"
-      className={cn("flex flex-1 text-left", className)}
+      className={cn("flex min-w-0 flex-1 truncate text-left", className)}
       {...props}
     />
   )
@@ -41,7 +41,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex w-fit items-center justify-between gap-1.5 rounded-lg border border-input bg-transparent",
+        "flex w-fit min-w-0 items-center justify-between gap-1.5 overflow-hidden rounded-lg border border-input bg-transparent",
         "py-2 pr-2 pl-2.5 text-sm whitespace-nowrap",
         "transition-all duration-150 outline-none select-none",
         "hover:bg-accent/5 hover:border-accent-foreground/20",

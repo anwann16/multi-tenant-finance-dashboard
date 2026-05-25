@@ -77,7 +77,7 @@ export default function TransaksiFilter({ filters, onChange, kategoris }: Transa
             <div className="space-y-1">
               <Label className="text-xs">Tipe</Label>
               <Select value={filters.type} onValueChange={(v) => { if (v) update("type", v); }}>
-                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-9 w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL" label="Semua">Semua</SelectItem>
                   <SelectItem value="PENGELUARAN" label="Pengeluaran">Pengeluaran</SelectItem>
@@ -90,7 +90,7 @@ export default function TransaksiFilter({ filters, onChange, kategoris }: Transa
             <div className="space-y-1">
               <Label className="text-xs">Status</Label>
               <Select value={filters.status} onValueChange={(v) => { if (v) update("status", v); }}>
-                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-9 w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL" label="Semua">Semua</SelectItem>
                   {TRANSAKSI_STATUS_OPTIONS.map((o) => (
@@ -104,7 +104,7 @@ export default function TransaksiFilter({ filters, onChange, kategoris }: Transa
             <div className="space-y-1">
               <Label className="text-xs">Metode Bayar</Label>
               <Select value={filters.metodeBayar} onValueChange={(v) => { if (v) update("metodeBayar", v); }}>
-                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-9 w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL" label="Semua">Semua</SelectItem>
                   {METODE_BAYAR_OPTIONS.map((o) => (
@@ -118,7 +118,7 @@ export default function TransaksiFilter({ filters, onChange, kategoris }: Transa
             <div className="space-y-1">
               <Label className="text-xs">Kategori</Label>
               <Select value={filters.kategoriId || "ALL"} onValueChange={(v) => { if (v) update("kategoriId", v === "ALL" ? "" : v); }}>
-                <SelectTrigger className="h-9">
+                <SelectTrigger className="h-9 w-full">
                   <SelectValue placeholder="Semua">
                     {(val: string | null) => {
                       if (!val || val === "ALL") return "Semua";
