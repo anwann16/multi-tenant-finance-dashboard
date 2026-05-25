@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { UserPlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +46,7 @@ export default function UserAssignDialog({ kantorId, users }: UserAssignDialogPr
   const assignMutation = useAssignUser();
   const unassignMutation = useUnassignUser();
   const [removeTarget, setRemoveTarget] = useState<UserKantorRole | null>(null);
+  const isRemovingRef = useRef(false);
 
   function handleAssign() {
     if (!email) return;
@@ -61,7 +62,8 @@ export default function UserAssignDialog({ kantorId, users }: UserAssignDialogPr
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setRemoveTarget(null); }}>
+    <>
+    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v && !isRemovingRef.current) setRemoveTarget(null); isRemovingRef.current = false; }}>
       <DialogTrigger render={
         <Button size="sm">
           <UserPlus className="mr-2 h-4 w-4" />
@@ -123,7 +125,7 @@ export default function UserAssignDialog({ kantorId, users }: UserAssignDialogPr
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-destructive hover:text-destructive"
-                      onClick={() => setRemoveTarget(ur)}
+                      onClick={() => { isRemovingRef.current = true; setOpen(false); setRemoveTarget(ur); }}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -134,6 +136,7 @@ export default function UserAssignDialog({ kantorId, users }: UserAssignDialogPr
           )}
         </div>
       </DialogContent>
+    </Dialog>
 
       <AlertDialog open={!!removeTarget} onOpenChange={(open) => { if (!open) setRemoveTarget(null); }}>
         <AlertDialogContent>
@@ -160,6 +163,6 @@ export default function UserAssignDialog({ kantorId, users }: UserAssignDialogPr
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Dialog>
+    </>
   );
 }
