@@ -70,130 +70,136 @@ export default function TransaksiFilter({ filters, onChange, kategoris }: Transa
 
       {/* Advanced Filters */}
       {showAdvanced && (
-        <div className="grid gap-3 rounded-xl border p-4 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Type */}
-          <div className="space-y-1">
-            <Label className="text-xs">Tipe</Label>
-            <Select value={filters.type} onValueChange={(v) => { if (v) update("type", v); }}>
-              <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL" label="Semua">Semua</SelectItem>
-                <SelectItem value="PENGELUARAN" label="Pengeluaran">Pengeluaran</SelectItem>
-                <SelectItem value="PEMASUKAN" label="Pemasukan">Pemasukan</SelectItem>
-              </SelectContent>
-            </Select>
+        <div className="rounded-xl border p-4 space-y-3">
+          {/* Dropdowns: 2 cols on mobile, 4 cols on sm+ */}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Type */}
+            <div className="space-y-1">
+              <Label className="text-xs">Tipe</Label>
+              <Select value={filters.type} onValueChange={(v) => { if (v) update("type", v); }}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL" label="Semua">Semua</SelectItem>
+                  <SelectItem value="PENGELUARAN" label="Pengeluaran">Pengeluaran</SelectItem>
+                  <SelectItem value="PEMASUKAN" label="Pemasukan">Pemasukan</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Status */}
+            <div className="space-y-1">
+              <Label className="text-xs">Status</Label>
+              <Select value={filters.status} onValueChange={(v) => { if (v) update("status", v); }}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL" label="Semua">Semua</SelectItem>
+                  {TRANSAKSI_STATUS_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value} label={o.label}>{o.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Metode Bayar */}
+            <div className="space-y-1">
+              <Label className="text-xs">Metode Bayar</Label>
+              <Select value={filters.metodeBayar} onValueChange={(v) => { if (v) update("metodeBayar", v); }}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL" label="Semua">Semua</SelectItem>
+                  {METODE_BAYAR_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value} label={o.label}>{o.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Kategori */}
+            <div className="space-y-1">
+              <Label className="text-xs">Kategori</Label>
+              <Select value={filters.kategoriId || "ALL"} onValueChange={(v) => { if (v) update("kategoriId", v === "ALL" ? "" : v); }}>
+                <SelectTrigger className="h-9">
+                  <SelectValue placeholder="Semua">
+                    {(val: string | null) => {
+                      if (!val || val === "ALL") return "Semua";
+                      const k = kategoris.find((k) => k.id === val);
+                      return k ? `${k.icon} ${k.name}` : "Semua";
+                    }}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL" label="Semua">Semua</SelectItem>
+                  {kategoris.map((k) => (
+                    <SelectItem key={k.id} value={k.id} label={`${k.icon} ${k.name}`}>{k.icon} {k.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          {/* Status */}
-          <div className="space-y-1">
-            <Label className="text-xs">Status</Label>
-            <Select value={filters.status} onValueChange={(v) => { if (v) update("status", v); }}>
-              <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL" label="Semua">Semua</SelectItem>
-                {TRANSAKSI_STATUS_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value} label={o.label}>{o.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Date pickers + nominal: 1 col on mobile, 2 cols on sm+, 4 cols on lg */}
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Date From */}
+            <div className="space-y-1">
+              <Label className="text-xs">Dari Tanggal</Label>
+              <Popover open={fromOpen} onOpenChange={setFromOpen}>
+                <PopoverTrigger render={
+                  <Button variant="outline" className="h-9 w-full justify-start text-left font-normal">
+                    <CalendarIcon className="mr-2 h-3 w-3" />
+                    {filters.tanggalFrom ? formatDateShort(filters.tanggalFrom) : "Pilih tanggal"}
+                  </Button>
+                } />
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={filters.tanggalFrom ? new Date(filters.tanggalFrom) : undefined}
+                    onSelect={(d) => { update("tanggalFrom", d ? d.toISOString().split("T")[0] : ""); setFromOpen(false); }}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
 
-          {/* Metode Bayar */}
-          <div className="space-y-1">
-            <Label className="text-xs">Metode Bayar</Label>
-            <Select value={filters.metodeBayar} onValueChange={(v) => { if (v) update("metodeBayar", v); }}>
-              <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL" label="Semua">Semua</SelectItem>
-                {METODE_BAYAR_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value} label={o.label}>{o.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            {/* Date To */}
+            <div className="space-y-1">
+              <Label className="text-xs">Sampai Tanggal</Label>
+              <Popover open={toOpen} onOpenChange={setToOpen}>
+                <PopoverTrigger render={
+                  <Button variant="outline" className="h-9 w-full justify-start text-left font-normal">
+                    <CalendarIcon className="mr-2 h-3 w-3" />
+                    {filters.tanggalTo ? formatDateShort(filters.tanggalTo) : "Pilih tanggal"}
+                  </Button>
+                } />
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={filters.tanggalTo ? new Date(filters.tanggalTo) : undefined}
+                    onSelect={(d) => { update("tanggalTo", d ? d.toISOString().split("T")[0] : ""); setToOpen(false); }}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
 
-          {/* Kategori */}
-          <div className="space-y-1">
-            <Label className="text-xs">Kategori</Label>
-            <Select value={filters.kategoriId || "ALL"} onValueChange={(v) => { if (v) update("kategoriId", v === "ALL" ? "" : v); }}>
-              <SelectTrigger className="h-9">
-                <SelectValue placeholder="Semua">
-                  {(val: string | null) => {
-                    if (!val || val === "ALL") return "Semua";
-                    const k = kategoris.find((k) => k.id === val);
-                    return k ? `${k.icon} ${k.name}` : "Semua";
-                  }}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL" label="Semua">Semua</SelectItem>
-                {kategoris.map((k) => (
-                  <SelectItem key={k.id} value={k.id} label={`${k.icon} ${k.name}`}>{k.icon} {k.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Date From */}
-          <div className="space-y-1">
-            <Label className="text-xs">Dari Tanggal</Label>
-            <Popover open={fromOpen} onOpenChange={setFromOpen}>
-              <PopoverTrigger render={
-                <Button variant="outline" className="h-9 w-full justify-start text-left font-normal">
-                  <CalendarIcon className="mr-2 h-3 w-3" />
-                  {filters.tanggalFrom ? formatDateShort(filters.tanggalFrom) : "Pilih tanggal"}
-                </Button>
-              } />
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={filters.tanggalFrom ? new Date(filters.tanggalFrom) : undefined}
-                  onSelect={(d) => { update("tanggalFrom", d ? d.toISOString().split("T")[0] : ""); setFromOpen(false); }}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          {/* Date To */}
-          <div className="space-y-1">
-            <Label className="text-xs">Sampai Tanggal</Label>
-            <Popover open={toOpen} onOpenChange={setToOpen}>
-              <PopoverTrigger render={
-                <Button variant="outline" className="h-9 w-full justify-start text-left font-normal">
-                  <CalendarIcon className="mr-2 h-3 w-3" />
-                  {filters.tanggalTo ? formatDateShort(filters.tanggalTo) : "Pilih tanggal"}
-                </Button>
-              } />
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={filters.tanggalTo ? new Date(filters.tanggalTo) : undefined}
-                  onSelect={(d) => { update("tanggalTo", d ? d.toISOString().split("T")[0] : ""); setToOpen(false); }}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          {/* Nominal Range */}
-          <div className="space-y-1">
-            <Label className="text-xs">Minimal Nominal</Label>
-            <Input
-              type="number"
-              placeholder="0"
-              className="h-9"
-              value={filters.nominalMin}
-              onChange={(e) => update("nominalMin", e.target.value)}
-            />
-          </div>
-          <div className="space-y-1">
-            <Label className="text-xs">Maksimal Nominal</Label>
-            <Input
-              type="number"
-              placeholder="Tanpa batas"
-              className="h-9"
-              value={filters.nominalMax}
-              onChange={(e) => update("nominalMax", e.target.value)}
-            />
+            {/* Nominal Range */}
+            <div className="space-y-1">
+              <Label className="text-xs">Minimal Nominal</Label>
+              <Input
+                type="number"
+                placeholder="0"
+                className="h-9"
+                value={filters.nominalMin}
+                onChange={(e) => update("nominalMin", e.target.value)}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Maksimal Nominal</Label>
+              <Input
+                type="number"
+                placeholder="Tanpa batas"
+                className="h-9"
+                value={filters.nominalMax}
+                onChange={(e) => update("nominalMax", e.target.value)}
+              />
+            </div>
           </div>
         </div>
       )}

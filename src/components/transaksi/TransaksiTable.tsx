@@ -129,7 +129,7 @@ export default function TransaksiTable({ data }: TransaksiTableProps) {
   return (
     <>
       {/* Desktop */}
-      <div className="hidden rounded-lg border md:block">
+      <div className="hidden rounded-lg border lg:block">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
@@ -164,8 +164,8 @@ export default function TransaksiTable({ data }: TransaksiTableProps) {
         </Table>
       </div>
 
-      {/* Mobile */}
-      <div className="space-y-2 md:hidden">
+      {/* Mobile + Tablet */}
+      <div className="space-y-2 lg:hidden">
         {table.getRowModel().rows.length === 0 ? (
           <div className="rounded-xl border p-6 text-center text-sm text-muted-foreground">
             Tidak ada transaksi
