@@ -61,7 +61,7 @@ export default function UserAssignDialog({ kantorId, users }: UserAssignDialogPr
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setRemoveTarget(null); }}>
       <DialogTrigger render={
         <Button size="sm">
           <UserPlus className="mr-2 h-4 w-4" />
