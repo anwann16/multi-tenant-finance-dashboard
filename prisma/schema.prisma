@@ -47,7 +47,7 @@ enum NotifType {
 // --- Better Auth managed tables (no @map) ---
 
 model User {
-  id            String   @id @default(uuid()) @db.Uuid
+  id            String   @id @default(cuid())
   name          String
   email         String   @unique
   emailVerified Boolean  @default(false)
@@ -67,7 +67,7 @@ model User {
 
 model Session {
   id            String   @id @default(cuid())
-  userId        String   @db.Uuid
+  userId        String
   expiresAt     DateTime
   token         String   @unique
   ipAddress     String?
@@ -83,7 +83,7 @@ model Session {
 
 model Account {
   id            String   @id @default(cuid())
-  userId        String   @db.Uuid
+  userId        String
   accountId     String
   providerId    String
   password      String?
@@ -116,7 +116,7 @@ model Kantor {
   description     String?
   pettyCashLimit  Decimal  @default(0) @db.Decimal(15, 2)
   isActive        Boolean  @default(true)
-  createdById     String   @db.Uuid
+  createdById     String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -129,7 +129,7 @@ model Kantor {
 
 model KantorUserRole {
   id        String      @id @default(uuid()) @db.Uuid
-  userId    String      @db.Uuid
+  userId    String
   kantorId  String      @db.Uuid
   role      KantorRole  @default(FINANCE)
   isActive  Boolean     @default(true)
@@ -161,7 +161,7 @@ model Kategori {
 model Transaksi {
   id               String          @id @default(uuid()) @db.Uuid
   kantorId         String          @db.Uuid
-  userId           String          @db.Uuid
+  userId           String
   kategoriId       String          @db.Uuid
   type             TransaksiType
   nomorTransaksi   String          @unique
@@ -205,7 +205,7 @@ model PettyCashLog {
   nominal      Decimal       @db.Decimal(15, 2)
   deskripsi    String?
   referenceId  String?       @db.Uuid
-  createdById  String        @db.Uuid
+  createdById  String
   createdAt    DateTime      @default(now())
 
   kantor       Kantor        @relation(fields: [kantorId], references: [id])
@@ -217,7 +217,7 @@ model PettyCashLog {
 
 model Notification {
   id           String    @id @default(uuid()) @db.Uuid
-  userId       String    @db.Uuid
+  userId       String
   title        String
   message      String
   type         NotifType
