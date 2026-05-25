@@ -88,8 +88,8 @@ export default function Topbar() {
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="text-destructive"
-              onSelect={handleLogout}
+              className="text-destructive cursor-pointer"
+              onClick={handleLogout}
               disabled={loggingOut}
             >
               <LogOut className="mr-2 h-4 w-4" />
