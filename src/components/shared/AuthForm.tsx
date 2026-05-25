@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +23,7 @@ import {
   type LoginInput,
   type RegisterInput,
 } from "@/lib/validators";
+import { signIn, signUp } from "@/lib/auth-client";
 
 type AuthMode = "login" | "register";
 
@@ -32,6 +34,7 @@ interface AuthFormProps {
 export default function AuthForm({ mode }: AuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const isLogin = mode === "login";
 
@@ -46,18 +49,21 @@ export default function AuthForm({ mode }: AuthFormProps) {
     setIsLoading(true);
     setError(null);
 
-    // Mock validation
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
     if (isLogin) {
       const { email, password } = data as LoginInput;
-      if (password.length < 6) {
-        setError("Password minimal 6 karakter");
+      const { error: signInError } = await signIn.email({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        setError(signInError.message || "Email atau password salah");
         setIsLoading(false);
         return;
       }
-      console.log("Mock login:", { email, password });
-      window.location.href = "/dashboard";
+
+      router.push("/dashboard");
+      router.refresh();
     } else {
       const { name, email, password, confirmPassword } = data as RegisterInput;
       if (password !== confirmPassword) {
@@ -65,8 +71,19 @@ export default function AuthForm({ mode }: AuthFormProps) {
         setIsLoading(false);
         return;
       }
-      console.log("Mock register:", { name, email, password });
-      window.location.href = "/login";
+      const { error: signUpError } = await signUp.email({
+        name,
+        email,
+        password,
+      });
+
+      if (signUpError) {
+        setError(signUpError.message || "Gagal mendaftar");
+        setIsLoading(false);
+        return;
+      }
+
+      router.push("/login");
     }
 
     setIsLoading(false);
