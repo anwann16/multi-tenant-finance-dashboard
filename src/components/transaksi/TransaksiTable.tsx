@@ -88,9 +88,9 @@ export default function TransaksiTable({ data }: TransaksiTableProps) {
     },
     {
       id: "aksi",
-      header: () => <span className="text-right">Aksi</span>,
+      header: "Aksi",
       cell: ({ row }) => (
-        <div className="text-right">
+        <div className="text-center">
           <Link href={`/transaksi/${row.original.id}`}>
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <Eye className="h-4 w-4" />
@@ -98,7 +98,7 @@ export default function TransaksiTable({ data }: TransaksiTableProps) {
           </Link>
         </div>
       ),
-      size: 60,
+      size: 72,
     },
   ];
 
