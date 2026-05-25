@@ -45,7 +45,7 @@ const menuItems = [
   },
 ];
 
-function MobileMenuItem({ item }: { item: (typeof menuItems)[number] }) {
+function MobileMenuItem({ item, onNavigate }: { item: (typeof menuItems)[number]; onNavigate: () => void }) {
   const pathname = usePathname();
   const isActive =
     pathname === item.href || pathname.startsWith(item.href + "/");
@@ -85,6 +85,7 @@ function MobileMenuItem({ item }: { item: (typeof menuItems)[number] }) {
                 <Link
                   key={child.href}
                   href={child.href}
+                  onClick={onNavigate}
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-1.5 text-sm transition-colors",
                     isChildItemActive
@@ -106,6 +107,7 @@ function MobileMenuItem({ item }: { item: (typeof menuItems)[number] }) {
   return (
     <Link
       href={item.href}
+      onClick={onNavigate}
       className={cn(
         "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
         isActive
@@ -132,7 +134,7 @@ export default function MobileMenu() {
         </div>
         <nav className="space-y-1 p-3">
           {menuItems.map((item) => (
-            <MobileMenuItem key={item.href} item={item} />
+            <MobileMenuItem key={item.href} item={item} onNavigate={() => setMobileOpen(false)} />
           ))}
         </nav>
       </SheetContent>

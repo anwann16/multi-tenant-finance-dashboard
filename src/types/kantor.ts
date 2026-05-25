@@ -20,16 +20,7 @@ export interface KantorDetail extends KantorWithUserCount {
     name: string;
     email: string;
   };
-  userRoles: Array<{
-    id: string;
-    role: KantorRole;
-    isActive: boolean;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-    };
-  }>;
+  userRoles: UserKantorRole[];
 }
 
 export interface UserKantorRole {
