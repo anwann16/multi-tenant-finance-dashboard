@@ -50,42 +50,42 @@ export default function KantorDetailPage() {
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-start gap-3">
-        <Link href="/kantor">
-          <Button variant="ghost" size="icon" className="mt-0.5 h-9 w-9 shrink-0">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{kantor.name}</h1>
-            <Badge variant={kantor.isActive ? "default" : "secondary"}>
-              {kantor.isActive ? "Aktif" : "Nonaktif"}
-            </Badge>
+    <div className="space-y-4 sm:space-y-6">
+      {/* Header — mobile: stacked, desktop: original */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <Link href="/kantor">
+            <Button variant="ghost" size="icon" className="h-9 w-9">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{kantor.name}</h1>
+              <Badge variant={kantor.isActive ? "default" : "secondary"}>
+                {kantor.isActive ? "Aktif" : "Nonaktif"}
+              </Badge>
+            </div>
+            <p className="text-sm text-muted-foreground">Dibuat pada {formatDate(kantor.createdAt)}</p>
           </div>
-          <p className="mt-0.5 text-xs text-muted-foreground sm:text-sm">Dibuat pada {formatDate(kantor.createdAt)}</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <UserAssignDialog kantorId={kantor.id} users={kantor.userRoles} />
+          <Link href={`/kantor/${id}/edit`}>
+            <Button variant="outline" size="sm"><Pencil className="mr-2 h-4 w-4" />Edit</Button>
+          </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-destructive hover:text-destructive"
+            onClick={() => setDeleteOpen(true)}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />Hapus
+          </Button>
         </div>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex flex-wrap gap-2">
-        <UserAssignDialog kantorId={kantor.id} users={kantor.userRoles} />
-        <Link href={`/kantor/${id}/edit`}>
-          <Button variant="outline" size="sm"><Pencil className="mr-2 h-4 w-4" />Edit</Button>
-        </Link>
-        <Button
-          variant="outline"
-          size="sm"
-          className="text-destructive hover:text-destructive"
-          onClick={() => setDeleteOpen(true)}
-        >
-          <Trash2 className="mr-2 h-4 w-4" />Hapus
-        </Button>
-      </div>
-
-      {/* Info cards */}
+      {/* Info cards — mobile: 1 col, tablet: 2 col, desktop: 3 col */}
       <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
@@ -103,11 +103,11 @@ export default function KantorDetailPage() {
             <p className="flex items-center gap-2 text-sm font-medium tabular-nums"><Wallet className="h-4 w-4 shrink-0" />{formatCurrency(kantor.pettyCashLimit)}</p>
           </CardContent>
         </Card>
-        <Card className="sm:col-span-2 lg:col-span-1">
+        <Card className="sm:col-span-2 sm:text-left lg:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-muted-foreground">Statistik</CardTitle>
           </CardHeader>
-          <CardContent className="flex gap-6 text-sm">
+          <CardContent className="space-y-1 text-sm sm:flex sm:gap-6 sm:space-y-0">
             <p>User: <span className="font-medium tabular-nums">{kantor.userRoles.length}</span></p>
             <p>Transaksi: <span className="font-medium tabular-nums">{kantor._count.transaksi}</span></p>
           </CardContent>
