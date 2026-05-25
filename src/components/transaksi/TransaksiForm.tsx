@@ -135,10 +135,17 @@ export default function TransaksiForm({ kantorId, type }: TransaksiFormProps) {
             <div className="space-y-2">
               <Label>Kategori</Label>
               <Select value={form.watch("kategoriId")} onValueChange={(v) => { if (v) form.setValue("kategoriId", v); }}>
-                <SelectTrigger><SelectValue placeholder="Pilih kategori" /></SelectTrigger>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih kategori">
+                    {(val: string | null) => {
+                      const k = kategoris?.find((k) => k.id === val);
+                      return k ? `${k.icon} ${k.name}` : val;
+                    }}
+                  </SelectValue>
+                </SelectTrigger>
                 <SelectContent>
                   {kategoris?.map((k) => (
-                    <SelectItem key={k.id} value={k.id}>{k.icon} {k.name}</SelectItem>
+                    <SelectItem key={k.id} value={k.id} label={`${k.icon} ${k.name}`}>{k.icon} {k.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -187,7 +194,7 @@ export default function TransaksiForm({ kantorId, type }: TransaksiFormProps) {
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {METODE_BAYAR_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                    <SelectItem key={o.value} value={o.value} label={o.label}>{o.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

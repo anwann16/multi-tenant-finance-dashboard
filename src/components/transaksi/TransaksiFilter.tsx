@@ -77,9 +77,9 @@ export default function TransaksiFilter({ filters, onChange, kategoris }: Transa
             <Select value={filters.type} onValueChange={(v) => { if (v) update("type", v); }}>
               <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">Semua</SelectItem>
-                <SelectItem value="PENGELUARAN">Pengeluaran</SelectItem>
-                <SelectItem value="PEMASUKAN">Pemasukan</SelectItem>
+                <SelectItem value="ALL" label="Semua">Semua</SelectItem>
+                <SelectItem value="PENGELUARAN" label="Pengeluaran">Pengeluaran</SelectItem>
+                <SelectItem value="PEMASUKAN" label="Pemasukan">Pemasukan</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -90,9 +90,9 @@ export default function TransaksiFilter({ filters, onChange, kategoris }: Transa
             <Select value={filters.status} onValueChange={(v) => { if (v) update("status", v); }}>
               <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">Semua</SelectItem>
+                <SelectItem value="ALL" label="Semua">Semua</SelectItem>
                 {TRANSAKSI_STATUS_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  <SelectItem key={o.value} value={o.value} label={o.label}>{o.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -104,9 +104,9 @@ export default function TransaksiFilter({ filters, onChange, kategoris }: Transa
             <Select value={filters.metodeBayar} onValueChange={(v) => { if (v) update("metodeBayar", v); }}>
               <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">Semua</SelectItem>
+                <SelectItem value="ALL" label="Semua">Semua</SelectItem>
                 {METODE_BAYAR_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  <SelectItem key={o.value} value={o.value} label={o.label}>{o.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -116,11 +116,19 @@ export default function TransaksiFilter({ filters, onChange, kategoris }: Transa
           <div className="space-y-1">
             <Label className="text-xs">Kategori</Label>
             <Select value={filters.kategoriId || "ALL"} onValueChange={(v) => { if (v) update("kategoriId", v === "ALL" ? "" : v); }}>
-              <SelectTrigger className="h-9"><SelectValue placeholder="Semua" /></SelectTrigger>
+              <SelectTrigger className="h-9">
+                <SelectValue placeholder="Semua">
+                  {(val: string | null) => {
+                    if (!val || val === "ALL") return "Semua";
+                    const k = kategoris.find((k) => k.id === val);
+                    return k ? `${k.icon} ${k.name}` : "Semua";
+                  }}
+                </SelectValue>
+              </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">Semua</SelectItem>
+                <SelectItem value="ALL" label="Semua">Semua</SelectItem>
                 {kategoris.map((k) => (
-                  <SelectItem key={k.id} value={k.id}>{k.icon} {k.name}</SelectItem>
+                  <SelectItem key={k.id} value={k.id} label={`${k.icon} ${k.name}`}>{k.icon} {k.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
