@@ -29,31 +29,6 @@ function CustomTooltip({ active, payload, label }: any) {
   );
 }
 
-function RoundedBar(props: any) {
-  const { x, y, width, height, fill, dataKey } = props;
-  if (height <= 0) return null;
-  const radius = Math.min(6, height / 2, width / 2);
-  return (
-    <g>
-      <defs>
-        <linearGradient id={`grad-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={fill} stopOpacity={1} />
-          <stop offset="100%" stopColor={fill} stopOpacity={0.7} />
-        </linearGradient>
-      </defs>
-      <path
-        d={`M${x},${y + height}
-            L${x},${y + radius}
-            Q${x},${y} ${x + radius},${y}
-            L${x + width - radius},${y}
-            Q${x + width},${y} ${x + width},${y + radius}
-            L${x + width},${y + height} Z`}
-        fill={`url(#grad-${dataKey})`}
-      />
-    </g>
-  );
-}
-
 export default function TransaksiChart() {
   const [range, setRange] = useState<"bulanan" | "mingguan" | "harian">("bulanan");
 
@@ -102,8 +77,8 @@ export default function TransaksiChart() {
                 dx={-10}
               />
               <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted))", opacity: 0.3 }} />
-              <Bar dataKey="pemasukan" name="Pemasukan" shape={<RoundedBar dataKey="pemasukan" />} />
-              <Bar dataKey="pengeluaran" name="Pengeluaran" shape={<RoundedBar dataKey="pengeluaran" />} />
+              <Bar dataKey="pemasukan" name="Pemasukan" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="pengeluaran" name="Pengeluaran" fill="#f43f5e" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
