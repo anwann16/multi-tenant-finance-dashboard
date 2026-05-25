@@ -56,7 +56,7 @@ export const ProfileSchema = z.object({
 
 export const ChangePasswordSchema = z.object({
   currentPassword: z.string().min(6, "Password minimal 6 karakter"),
-  newPassword: z.string().min(6, "Password minimal 6 karakter"),
+  newPassword: z.string().min(6, "Password baru minimal 6 karakter"),
   confirmPassword: z.string(),
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: "Password tidak cocok",
