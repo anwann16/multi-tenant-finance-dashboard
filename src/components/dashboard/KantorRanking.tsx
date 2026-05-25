@@ -25,7 +25,7 @@ export default function KantorRanking() {
       <CardContent className="p-0">
         <div className="divide-y">
           {MOCK_DATA.map((k, i) => (
-            <Link key={k.id} href={`/kantor/${k.id}`} className="flex items-center gap-4 px-6 py-3 transition-colors hover:bg-muted/50">
+            <Link key={k.id} href={`/kantor/${k.id}`} className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/50 sm:gap-4 sm:px-6">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
                 {i + 1}
               </div>

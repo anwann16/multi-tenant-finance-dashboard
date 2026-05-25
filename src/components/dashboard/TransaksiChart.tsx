@@ -18,9 +18,9 @@ export default function TransaksiChart() {
 
   return (
     <Card className="hover:shadow-md transition-shadow duration-200">
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <CardTitle className="text-base font-medium">Trend Pemasukan vs Pengeluaran</CardTitle>
-        <div className="flex rounded-lg bg-muted p-1">
+        <div className="flex shrink-0 rounded-lg bg-muted p-1">
           {(["bulanan", "mingguan", "harian"] as const).map((r) => (
             <button
               key={r}
@@ -34,10 +34,10 @@ export default function TransaksiChart() {
           ))}
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="h-[350px] w-full">
+      <CardContent className="px-2 sm:px-6">
+        <div className="h-[250px] sm:h-[350px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={MOCK_DATA} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <AreaChart data={MOCK_DATA} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorPemasukan" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>

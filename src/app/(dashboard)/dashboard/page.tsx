@@ -34,7 +34,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts Row */}
-      <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <TransaksiChart />
         </div>
@@ -44,7 +44,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Tables Row */}
-      <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
         <RecentTransaksi />
         {isAdmin && <KantorRanking />}
       </div>
