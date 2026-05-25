@@ -15,12 +15,12 @@ export default function KantorListPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Kantor</h1>
           <p className="text-sm text-muted-foreground">Kelola semua kantor dan user assignment.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-2 sm:justify-end">
           <div className="flex rounded-lg border">
             <Button variant={view === "grid" ? "secondary" : "ghost"} size="icon" className="h-9 w-9" onClick={() => setView("grid")}>
               <LayoutGrid className="h-4 w-4" />

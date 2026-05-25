@@ -69,7 +69,7 @@ export default function KantorDetailPage() {
             <p className="text-sm text-muted-foreground">Dibuat pada {formatDate(kantor.createdAt)}</p>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-2">
           <UserAssignDialog kantorId={kantor.id} users={kantor.userRoles} />
           <Link href={`/kantor/${id}/edit`}>
             <Button variant="outline" size="sm"><Pencil className="mr-2 h-4 w-4" />Edit</Button>
