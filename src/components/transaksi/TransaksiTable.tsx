@@ -31,7 +31,7 @@ export default function TransaksiTable({ data }: TransaksiTableProps) {
       cell: ({ row }) => (
         <span className="font-mono text-xs">{row.original.nomorTransaksi}</span>
       ),
-      size: 140,
+      size: 160,
     },
     {
       accessorKey: "tanggal",

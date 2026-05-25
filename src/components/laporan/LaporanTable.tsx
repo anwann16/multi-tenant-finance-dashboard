@@ -19,22 +19,22 @@ export default function LaporanTable({ data }: LaporanTableProps) {
       <CardContent className="p-0">
         {/* Desktop table */}
         <div className="hidden lg:block overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full table-fixed">
             <thead>
               <tr className="border-b bg-muted/30">
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-[100px]">Tanggal</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-[140px]">No. Transaksi</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Deskripsi</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Kategori</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-[90px]">Metode</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground w-[140px]">Nominal</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-1/6">Tanggal</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-1/6">No. Transaksi</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-1/6">Deskripsi</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-1/6">Kategori</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-1/6">Metode</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-1/6">Nominal</th>
               </tr>
             </thead>
             <tbody>
               {data.map((t) => (
                 <tr key={t.id} className="border-b transition-colors hover:bg-muted/30">
-                  <td className="px-4 py-3 text-sm tabular-nums w-[100px]">{formatDateShort(t.tanggal)}</td>
-                  <td className="px-4 py-3 text-sm font-mono text-muted-foreground w-[140px]">{t.nomorTransaksi}</td>
+                  <td className="px-4 py-3 text-sm tabular-nums">{formatDateShort(t.tanggal)}</td>
+                  <td className="px-4 py-3 text-sm font-mono text-muted-foreground">{t.nomorTransaksi}</td>
                   <td className="px-4 py-3 text-sm max-w-[200px] truncate">{t.deskripsi}</td>
                   <td className="px-4 py-3">
                     <span className="inline-flex items-center gap-1.5 text-xs font-medium">
@@ -42,8 +42,8 @@ export default function LaporanTable({ data }: LaporanTableProps) {
                       <span className="text-muted-foreground">{t.kategori.name}</span>
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground w-[90px]">{t.metodeBayar}</td>
-                  <td className="px-4 py-3 text-right w-[140px]">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{t.metodeBayar}</td>
+                  <td className="px-4 py-3 text-left">
                     <span className={`inline-flex items-center gap-1 text-sm font-semibold tabular-nums ${
                       t.type === "PEMASUKAN" ? "text-emerald-600" : "text-rose-600"
                     }`}>
