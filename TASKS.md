@@ -272,13 +272,13 @@
 - [ ] Unit test: laporan.service.test.ts
 
 ### T8.2 — Laporan Frontend
-- [ ] `src/app/(dashboard)/laporan/page.tsx` — Laporan viewer
-- [ ] `src/components/laporan/LaporanFilter.tsx` — Date + kategori filter
-- [ ] `src/components/laporan/LaporanTable.tsx` — Results table
-- [ ] `src/components/laporan/LaporanSummary.tsx` — Summary cards
-- [ ] `src/components/laporan/ExportButtons.tsx` — Excel + PDF buttons
-- [ ] PDF template (branded header/footer)
-- [ ] First commit: `feat(laporan): report viewer + Excel/PDF export`
+- [x] `src/app/(dashboard)/laporan/page.tsx` — Laporan viewer
+- [x] `src/components/laporan/LaporanFilter.tsx` — Date + kategori filter
+- [x] `src/components/laporan/LaporanTable.tsx` — Results table
+- [x] `src/components/laporan/LaporanSummary.tsx` — Summary cards
+- [x] `src/components/laporan/ExportButtons.tsx` — Excel + PDF buttons
+- [x] PDF template (branded header/footer)
+- [x] First commit: `feat(laporan): report viewer + Excel/PDF export`
 
 ---
 
