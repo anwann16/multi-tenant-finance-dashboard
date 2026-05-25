@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Link from "next/link";
-import { ArrowDownUp, TrendingDown, TrendingUp } from "lucide-react";
+import { ArrowDownUp, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTransaksiList } from "@/hooks/useTransaksi";
 import { useKategoris } from "@/hooks/useKategori";
 import TransaksiTable from "@/components/transaksi/TransaksiTable";
 import TransaksiFilter from "@/components/transaksi/TransaksiFilter";
+import TransaksiForm from "@/components/transaksi/TransaksiForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { TransaksiFilterState, TransaksiWithRelations } from "@/types/transaksi";
 
@@ -22,6 +22,7 @@ export default function TransaksiListPage() {
   const { data, isLoading } = useTransaksiList(MOCK_KANTOR_ID);
   const { data: kategoris = [] } = useKategoris(MOCK_KANTOR_ID);
   const [filters, setFilters] = useState<TransaksiFilterState>(DEFAULT_FILTERS);
+  const [formOpen, setFormOpen] = useState(false);
 
   const filtered = useMemo(() => {
     if (!data) return [];
@@ -55,14 +56,9 @@ export default function TransaksiListPage() {
             <p className="text-sm text-muted-foreground">Kelola transaksi pemasukan & pengeluaran</p>
           </div>
         </div>
-        <div className="flex items-center justify-center gap-2 sm:justify-end">
-          <Link href="/transaksi/pengeluaran/new">
-            <Button variant="outline" size="sm"><TrendingDown className="mr-2 h-4 w-4" />Pengeluaran</Button>
-          </Link>
-          <Link href="/transaksi/pemasukan/new">
-            <Button size="sm"><TrendingUp className="mr-2 h-4 w-4" />Pemasukan</Button>
-          </Link>
-        </div>
+        <Button size="sm" onClick={() => setFormOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />Transaksi Baru
+        </Button>
       </div>
 
       {/* Summary */}
@@ -98,6 +94,9 @@ export default function TransaksiListPage() {
       ) : (
         <TransaksiTable data={filtered} />
       )}
+
+      {/* Dialog Form */}
+      <TransaksiForm kantorId={MOCK_KANTOR_ID} open={formOpen} onOpenChange={setFormOpen} />
     </div>
   );
 }

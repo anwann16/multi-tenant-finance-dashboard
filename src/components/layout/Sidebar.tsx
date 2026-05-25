@@ -15,8 +15,6 @@ import {
   Settings,
   ChevronLeft,
   ChevronDown,
-  TrendingUp,
-  TrendingDown,
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -36,10 +34,6 @@ const menuItems = [
     label: "Transaksi",
     href: "/transaksi",
     icon: Receipt,
-    children: [
-      { label: "Pengeluaran", href: "/transaksi/pengeluaran/new", icon: TrendingDown },
-      { label: "Pemasukan", href: "/transaksi/pemasukan/new", icon: TrendingUp },
-    ],
   },
   {
     label: "Petty Cash",
