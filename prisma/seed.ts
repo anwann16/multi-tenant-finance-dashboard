@@ -28,7 +28,18 @@ const defaultPemasukan = [
 ];
 
 async function main() {
-  // 1. Create admin user
+  // 1. Create users
+  const superadmin = await prisma.user.upsert({
+    where: { email: "superadmin@kantor.com" },
+    update: {},
+    create: {
+      name: "Super Admin",
+      email: "superadmin@kantor.com",
+      role: "ADMIN",
+    },
+  });
+  console.log("Superadmin:", superadmin.id, superadmin.email);
+
   const admin = await prisma.user.upsert({
     where: { email: "admin@kantor.com" },
     update: {},
@@ -38,7 +49,29 @@ async function main() {
       role: "ADMIN",
     },
   });
-  console.log("Admin user:", admin.id, admin.email);
+  console.log("Admin:", admin.id, admin.email);
+
+  const finance1 = await prisma.user.upsert({
+    where: { email: "andi@kantor.com" },
+    update: {},
+    create: {
+      name: "Andi Kurniawan",
+      email: "andi@kantor.com",
+      role: "ADMIN",
+    },
+  });
+  console.log("Finance 1:", finance1.id, finance1.email);
+
+  const finance2 = await prisma.user.upsert({
+    where: { email: "sari@kantor.com" },
+    update: {},
+    create: {
+      name: "Sari Dewi",
+      email: "sari@kantor.com",
+      role: "ADMIN",
+    },
+  });
+  console.log("Finance 2:", finance2.id, finance2.email);
 
   // 2. Create default kantor
   const kantor = await prisma.kantor.upsert({
@@ -55,19 +88,28 @@ async function main() {
   });
   console.log("Default kantor:", kantor.id, kantor.name);
 
-  // 3. Assign admin to kantor
-  await prisma.kantorUserRole.upsert({
-    where: {
-      userId_kantorId: { userId: admin.id, kantorId: kantor.id },
-    },
-    update: {},
-    create: {
-      userId: admin.id,
-      kantorId: kantor.id,
-      role: "ADMIN_KANTOR",
-    },
-  });
-  console.log("Admin assigned to kantor");
+  // 3. Assign users to kantor
+  const usersToAssign = [
+    { user: superadmin, role: "ADMIN_KANTOR" as const },
+    { user: admin, role: "ADMIN_KANTOR" as const },
+    { user: finance1, role: "FINANCE" as const },
+    { user: finance2, role: "FINANCE" as const },
+  ];
+
+  for (const { user, role } of usersToAssign) {
+    await prisma.kantorUserRole.upsert({
+      where: {
+        userId_kantorId: { userId: user.id, kantorId: kantor.id },
+      },
+      update: {},
+      create: {
+        userId: user.id,
+        kantorId: kantor.id,
+        role,
+      },
+    });
+  }
+  console.log("Users assigned to kantor:", usersToAssign.length);
 
   // 4. Create default kategoris
   let kategoriCount = 0;
