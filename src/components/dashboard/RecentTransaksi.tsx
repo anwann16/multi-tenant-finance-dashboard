@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUp, ArrowDown, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency, formatDateShort } from "@/lib/utils";
 import type { TransaksiWithRelations } from "@/types/transaksi";
@@ -16,25 +16,32 @@ const MOCK_DATA: TransaksiWithRelations[] = [
 
 export default function RecentTransaksi() {
   return (
-    <Card className="hover:shadow-md transition-shadow duration-200">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-base font-medium">Transaksi Terakhir</CardTitle>
-        <Link href="/transaksi" className="text-xs text-primary hover:underline">
+    <Card className="border-border/50 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-0.5">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-base font-semibold">Transaksi Terakhir</CardTitle>
+        <Link href="/transaksi" className="group flex items-center gap-1 text-xs font-medium text-primary hover:text-primary/80 transition-colors">
           Lihat Semua
+          <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
         </Link>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="divide-y">
+        <div className="divide-y divide-border/50">
           {MOCK_DATA.map((t) => (
-            <div key={t.id} className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/50 sm:gap-4 sm:px-6">
-              <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${t.type === "PEMASUKAN" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}`}>
+            <div key={t.id} className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-muted/30 sm:gap-4 sm:px-6">
+              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                t.type === "PEMASUKAN"
+                  ? "bg-emerald-500/10 text-emerald-600"
+                  : "bg-rose-500/10 text-rose-600"
+              }`}>
                 {t.type === "PEMASUKAN" ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="truncate text-sm font-medium">{t.deskripsi}</p>
+                <p className="truncate text-sm font-medium text-foreground">{t.deskripsi}</p>
                 <p className="text-xs text-muted-foreground">{formatDateShort(t.tanggal)}</p>
               </div>
-              <span className={`text-sm font-medium tabular-nums ${t.type === "PEMASUKAN" ? "text-green-600" : "text-red-600"}`}>
+              <span className={`text-sm font-semibold tabular-nums ${
+                t.type === "PEMASUKAN" ? "text-emerald-600" : "text-rose-600"
+              }`}>
                 {t.type === "PEMASUKAN" ? "+" : "-"}{formatCurrency(t.nominal)}
               </span>
             </div>

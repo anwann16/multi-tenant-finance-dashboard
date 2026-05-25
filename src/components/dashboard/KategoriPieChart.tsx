@@ -14,13 +14,23 @@ const MOCK_DATA = [
 
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#6b7280"];
 
+function CustomTooltip({ active, payload }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-xl border border-border/50 bg-background/95 p-3 shadow-xl backdrop-blur-sm">
+      <p className="text-xs font-medium text-muted-foreground mb-1">{payload[0].name}</p>
+      <p className="text-sm font-semibold tabular-nums">{formatCurrency(payload[0].value)}</p>
+    </div>
+  );
+}
+
 function CustomLegend() {
   return (
-    <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 pt-4">
+    <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 pt-4">
       {MOCK_DATA.map((entry, i) => (
-        <div key={entry.name} className="flex items-center gap-1.5">
-          <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: COLORS[i] }} />
-          <span className="text-xs text-muted-foreground">{entry.name}</span>
+        <div key={entry.name} className="flex items-center gap-2">
+          <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: COLORS[i] }} />
+          <span className="text-xs text-muted-foreground font-medium">{entry.name}</span>
         </div>
       ))}
     </div>
@@ -29,9 +39,9 @@ function CustomLegend() {
 
 export default function KategoriPieChart() {
   return (
-    <Card className="hover:shadow-md transition-shadow duration-200">
+    <Card className="border-border/50 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-0.5">
       <CardHeader>
-        <CardTitle className="text-base font-medium">Distribusi Pengeluaran per Kategori</CardTitle>
+        <CardTitle className="text-base font-semibold">Distribusi Pengeluaran</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[250px] sm:h-[300px] w-full">
@@ -41,17 +51,18 @@ export default function KategoriPieChart() {
                 data={MOCK_DATA}
                 cx="50%"
                 cy="45%"
-                innerRadius={50}
-                outerRadius={85}
-                paddingAngle={5}
+                innerRadius={55}
+                outerRadius={90}
+                paddingAngle={4}
                 dataKey="value"
                 nameKey="name"
+                stroke="none"
               >
                 {MOCK_DATA.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value: any) => formatCurrency(Number(value))} />
+              <Tooltip content={<CustomTooltip />} />
             </PieChart>
           </ResponsiveContainer>
         </div>

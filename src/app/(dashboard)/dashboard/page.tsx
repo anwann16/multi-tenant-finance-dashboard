@@ -7,8 +7,8 @@ import StatsCard from "@/components/dashboard/StatsCard";
 import RecentTransaksi from "@/components/dashboard/RecentTransaksi";
 import KantorRanking from "@/components/dashboard/KantorRanking";
 
-const TransaksiChart = dynamic(() => import("@/components/dashboard/TransaksiChart"), { loading: () => <Skeleton className="h-[400px] w-full rounded-xl" /> });
-const KategoriPieChart = dynamic(() => import("@/components/dashboard/KategoriPieChart"), { loading: () => <Skeleton className="h-[400px] w-full rounded-xl" /> });
+const TransaksiChart = dynamic(() => import("@/components/dashboard/TransaksiChart"), { loading: () => <Skeleton className="h-[350px] w-full rounded-2xl" /> });
+const KategoriPieChart = dynamic(() => import("@/components/dashboard/KategoriPieChart"), { loading: () => <Skeleton className="h-[350px] w-full rounded-2xl" /> });
 
 export default function DashboardPage() {
   const isAdmin = true; // Placeholder for role check
@@ -27,10 +27,10 @@ export default function DashboardPage() {
 
       {/* Stats Cards */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <StatsCard title="Total Saldo" value="Rp 45.250.000" icon={Wallet} trend={12.5} />
-        <StatsCard title="Transaksi Hari Ini" value="12" icon={Wallet} trend={5.2} iconColor="text-green-600" />
-        <StatsCard title="Pemasukan Bulan Ini" value="Rp 18.000.000" icon={Wallet} iconColor="text-emerald-600" />
-        <StatsCard title="Pengeluaran Bulan Ini" value="Rp 11.000.000" icon={Wallet} iconColor="text-rose-600" />
+        <StatsCard title="Total Saldo" value="Rp 45.250.000" icon={Wallet} trend={12.5} gradient="blue" />
+        <StatsCard title="Transaksi Hari Ini" value="12" icon={Wallet} trend={5.2} gradient="green" />
+        <StatsCard title="Pemasukan Bulan Ini" value="Rp 18.000.000" icon={Wallet} gradient="purple" />
+        <StatsCard title="Pengeluaran Bulan Ini" value="Rp 11.000.000" icon={Wallet} gradient="red" />
       </div>
 
       {/* Charts Row */}
