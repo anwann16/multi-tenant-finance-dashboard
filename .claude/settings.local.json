@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "Read(//Users/macbook/Desktop/Project/**)",
+      "Bash(npx create-next-app@latest multi-tenant-finance-dashboard --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --yes)",
+      "Bash(mkdir -p _tmp_backup)",
+      "Bash(mv multi-tenant-finance-dashboard/CLAUDE.md multi-tenant-finance-dashboard/PRD.md multi-tenant-finance-dashboard/TASKS.md _tmp_backup/)"
+    ]
+  }
+}
