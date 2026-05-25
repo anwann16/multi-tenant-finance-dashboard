@@ -297,11 +297,11 @@
 - [ ] First commit: `feat(notification): in-app notifications`
 
 ### T9.2 — Notification Frontend
-- [ ] `src/components/layout/NotificationBell.tsx` — Badge + dropdown
-- [ ] `src/components/notification/NotificationList.tsx`
-- [ ] `src/components/notification/NotificationItem.tsx`
-- [ ] Real-time badge count (polling or WebSocket)
-- [ ] First commit: `feat(notification): bell dropdown + mark as read`
+- [x] `src/components/layout/NotificationBell.tsx` — Badge + dropdown
+- [x] `src/components/notification/NotificationList.tsx`
+- [x] `src/components/notification/NotificationItem.tsx`
+- [x] Real-time badge count (polling or WebSocket)
+- [x] First commit: `feat(notification): bell dropdown + mark as read`
 
 ---
 
