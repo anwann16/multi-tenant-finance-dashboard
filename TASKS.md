@@ -3,6 +3,7 @@
 ## Phase 0: Project Setup (Day 1)
 
 ### T0.1 — Init Project
+
 - [x] `npx create-next-app@latest kantor-app` (TypeScript, Tailwind, App Router)
 - [x] Install dependencies:
   - `prisma`, `@prisma/client`
@@ -32,14 +33,16 @@
 - [x] Init Prisma: `npx prisma init`
 
 ### T0.2 — Database Setup
+
 - [x] Write full Prisma schema (from PRD section 7)
 - [x] `npx prisma db push` (create tables)
 - [x] `npx prisma generate` (generate client)
 - [x] Create `src/lib/prisma.ts` (singleton pattern)
 - [x] Create `prisma/seed.ts` (default kategori + admin user)
-- [ ] `npx prisma db seed`
+- [x] `npx prisma db seed`
 
 ### T0.3 — Project Config
+
 - [x] Setup `src/lib/constants.ts` (enums, defaults)
 - [x] Setup `src/lib/utils.ts` (cn, formatCurrency, formatDate)
 - [x] Setup `src/lib/validators.ts` (base Zod schemas)
@@ -53,6 +56,7 @@
 ## Phase 1: Authentication (Day 2-3)
 
 ### T1.1 — Auth Backend
+
 - [ ] `src/lib/auth.ts` — Better Auth config (credentials provider + Prisma adapter)
 - [ ] `src/app/api/auth/[[...all]]/route.ts` — Better Auth catch-all route handler
 - [ ] `src/app/api/auth/sign-up/route.ts` — Custom sign-up endpoint (if custom logic needed, otherwise Better Auth handles it)
@@ -63,6 +67,7 @@
 - [ ] Unit test: auth.service.test.ts
 
 ### T1.2 — Auth Frontend
+
 - [x] `src/app/(auth)/layout.tsx` — Auth layout (centered card)
 - [x] `src/app/(auth)/login/page.tsx` — Login form
 - [x] `src/app/(auth)/register/page.tsx` — Register form (admin only first)
@@ -73,6 +78,7 @@
 - [ ] Use Better Auth's built-in signUp.email() and signIn.email() client helpers
 
 ### T1.3 — Middleware & Session
+
 - [ ] `src/middleware.ts` — Protect /dashboard routes
 - [ ] Better Auth session provider setup (from better-auth/react)
 - [ ] `useSession()` from better-auth/react
@@ -84,6 +90,7 @@
 ## Phase 2: Multi-Tenant — Kantor Management (Day 3-5)
 
 ### T2.1 — Kantor Backend
+
 - [ ] `src/services/kantor.service.ts`:
   - `createKantor()`
   - `getKantors()` (admin: all, finance: assigned)
@@ -100,6 +107,7 @@
 - [ ] Unit test: kantor.service.test.ts
 
 ### T2.2 — Kantor Frontend
+
 - [x] `src/app/(dashboard)/kantor/page.tsx` — List kantor (card grid)
 - [x] `src/app/(dashboard)/kantor/new/page.tsx` — Create kantor form
 - [x] `src/app/(dashboard)/kantor/[id]/page.tsx` — Detail kantor + user list
@@ -116,6 +124,7 @@
 ## Phase 3: Layout & Navigation (Day 5-6)
 
 ### T3.1 — Dashboard Layout
+
 - [x] `src/app/(dashboard)/layout.tsx` — Authenticated layout
 - [x] `src/components/layout/Sidebar.tsx` — Collapsible sidebar
 - [x] `src/components/layout/Topbar.tsx` — User menu, notification bell
@@ -131,6 +140,7 @@
 ## Phase 4: Kategori Management (Day 6-7)
 
 ### T4.1 — Kategori Backend
+
 - [ ] `src/services/kategori.service.ts`:
   - `getKategoris()` (by kantorId + type)
   - `createKategori()`
@@ -142,6 +152,7 @@
 - [ ] Unit test: kategori.service.test.ts
 
 ### T4.2 — Kategori Frontend
+
 - [x] `src/app/(dashboard)/kategori/page.tsx` — Kategori manager
 - [x] `src/components/kategori/KategoriForm.tsx` — Add/edit dialog
 - [x] `src/components/kategori/KategoriList.tsx` — Grouped by type
@@ -153,6 +164,7 @@
 ## Phase 5: Transaksi — Pengeluaran & Pemasukan (Day 7-12) ⭐ CORE
 
 ### T5.1 — Transaksi Backend
+
 - [ ] `src/services/transaksi.service.ts`:
   - `createTransaksi()` — Generate nomor, save
   - `getTransaksiList()` — Filter, paginate, search
@@ -171,6 +183,7 @@
 - [ ] Unit test: transaksi.service.test.ts (CRUD, nomor gen, saldo calc)
 
 ### T5.2 — Transaksi Frontend — Form
+
 - [x] `src/app/(dashboard)/transaksi/pengeluaran/new/page.tsx`
 - [x] `src/app/(dashboard)/transaksi/pemasukan/new/page.tsx`
 - [x] `src/components/transaksi/TransaksiForm.tsx` — Shared form
@@ -189,6 +202,7 @@
 - [x] Success redirect + toast notification
 
 ### T5.3 — Transaksi Frontend — List & Detail
+
 - [x] `src/app/(dashboard)/transaksi/page.tsx` — List all transaksi
 - [x] `src/app/(dashboard)/transaksi/[id]/page.tsx` — Detail transaksi
 - [x] `src/components/transaksi/TransaksiTable.tsx` — Sortable table
@@ -210,6 +224,7 @@
 ## Phase 6: Petty Cash (Day 12-13)
 
 ### T6.1 — Petty Cash Backend
+
 - [ ] `src/services/petty-cash.service.ts`:
   - `getPettyCashInfo()` — Current saldo + limit
   - `topUpPettyCash()` — Add funds (log TOPUP)
@@ -222,6 +237,7 @@
 - [ ] Unit test: petty-cash.service.test.ts
 
 ### T6.2 — Petty Cash Frontend
+
 - [x] `src/app/(dashboard)/petty-cash/page.tsx` — Petty cash dashboard
 - [x] `src/app/(dashboard)/petty-cash/topup/page.tsx` — Top-up form
 - [x] `src/components/petty-cash/PettyCashWidget.tsx` — Saldo card
@@ -235,6 +251,7 @@
 ## Phase 7: Dashboard (Day 13-15)
 
 ### T7.1 — Dashboard Backend
+
 - [ ] `src/app/api/dashboard/admin/route.ts` — Global stats
   - Total kantor aktif
   - Total transaksi hari ini
@@ -248,6 +265,7 @@
 - [ ] `src/services/dashboard.service.ts`
 
 ### T7.2 — Dashboard Frontend
+
 - [ ] `src/app/(dashboard)/page.tsx` — Dashboard page (role-based)
 - [ ] `src/components/dashboard/StatsCard.tsx` — KPI cards
 - [ ] `src/components/dashboard/TransaksiChart.tsx` — Line/bar chart (Recharts)
@@ -262,6 +280,7 @@
 ## Phase 8: Laporan & Export (Day 15-17)
 
 ### T8.1 — Laporan Backend
+
 - [ ] `src/services/laporan.service.ts`:
   - `getRingkasanBulanan()` — Summary per kantor
   - `getDetailLaporan()` — Filtered transaction list
@@ -272,6 +291,7 @@
 - [ ] Unit test: laporan.service.test.ts
 
 ### T8.2 — Laporan Frontend
+
 - [x] `src/app/(dashboard)/laporan/page.tsx` — Laporan viewer
 - [x] `src/components/laporan/LaporanFilter.tsx` — Date + kategori filter
 - [x] `src/components/laporan/LaporanTable.tsx` — Results table
@@ -285,6 +305,7 @@
 ## Phase 9: Notifications (Day 17-18)
 
 ### T9.1 — Notification Backend
+
 - [ ] `src/services/notification.service.ts`:
   - `createNotification()` — Create notif
   - `getNotifications()` — By userId, paginated
@@ -297,6 +318,7 @@
 - [ ] First commit: `feat(notification): in-app notifications`
 
 ### T9.2 — Notification Frontend
+
 - [x] `src/components/layout/NotificationBell.tsx` — Badge + dropdown
 - [x] `src/components/notification/NotificationList.tsx`
 - [x] `src/components/notification/NotificationItem.tsx`
@@ -308,12 +330,14 @@
 ## Phase 10: Settings & User Management (Day 18-19)
 
 ### T10.1 — Settings Backend
+
 - [ ] `src/app/api/users/route.ts` — List users (admin only)
 - [ ] `src/app/api/users/[id]/route.ts` — Update user profile
 - [ ] `src/app/api/users/[id]/password/route.ts` — Change password
 - [ ] `src/services/user.service.ts`
 
 ### T10.2 — Settings Frontend
+
 - [x] `src/app/(dashboard)/settings/page.tsx` — Profile settings
 - [x] `src/app/(dashboard)/settings/users/page.tsx` — User list (admin global)
 - [x] `src/components/settings/ProfileForm.tsx`
@@ -325,23 +349,27 @@
 ## Phase 11: Testing & QA (Day 19-21)
 
 ### T11.1 — Unit Tests
+
 - [ ] All service files covered (target: 80% coverage)
 - [ ] Validator tests (all Zod schemas)
 - [ ] `vitest run` — all passing
 
 ### T11.2 — Integration Tests
+
 - [ ] API route tests (supertest or similar)
 - [ ] Auth flow tests
 - [ ] Multi-tenant isolation tests
 - [ ] Transaction flow tests (create → confirm → saldo check)
 
 ### T11.3 — E2E Tests (Playwright)
+
 - [ ] Login → Dashboard flow
 - [ ] Create kantor → assign user → create transaksi
 - [ ] Petty cash: top-up → pengeluaran → saldo check
 - [ ] Laporan export flow
 
 ### T11.4 — Manual QA
+
 - [ ] Responsive check (mobile, tablet, desktop)
 - [ ] Cross-browser check (Chrome, Firefox, Safari)
 - [ ] Edge cases:
@@ -357,15 +385,17 @@
 ## Phase 12: Deploy & Launch (Day 21-22)
 
 ### T12.1 — Production Setup
+
 - [ ] Setup PostgreSQL (Supabase / Railway)
 - [ ] Setup file storage (Cloudflare R2 or Supabase Storage)
 - [ ] Configure Vercel environment variables
-    - BETTER_AUTH_SECRET (production secret)
-    - BETTER_AUTH_URL (production URL)
+  - BETTER_AUTH_SECRET (production secret)
+  - BETTER_AUTH_URL (production URL)
 - [ ] `prisma migrate deploy` (production DB)
 - [ ] Seed production kategori defaults
 
 ### T12.2 — Deploy
+
 - [ ] Push to GitHub → auto-deploy Vercel
 - [ ] Verify all routes work
 - [ ] Test auth flow on production
@@ -373,6 +403,7 @@
 - [ ] Verify SSL / HTTPS
 
 ### T12.3 — Post-Launch
+
 - [ ] Setup Sentry (error monitoring)
 - [ ] Setup uptime monitoring (UptimeRobot / BetterStack)
 - [ ] Create admin user on production
@@ -384,7 +415,6 @@
 
 ## Phase 13: Phase 2 Features (Post-MVP)
 
-- [ ] Approval workflow (Finance → Admin approve)
 - [ ] Budget per kategori per kantor
 - [ ] Multi-rekening bank per kantor
 - [ ] Recurring transactions
@@ -399,25 +429,25 @@
 
 ## Timeline Summary
 
-| Phase | Days | Deliverable |
-|---|---|---|
-| 0 — Project Setup | 1 | Init repo, DB, config |
-| 1 — Auth | 2 | Login/Register |
-| 2 — Kantor | 2 | Multi-tenant CRUD |
-| 3 — Layout | 1 | Sidebar, topbar |
-| 4 — Kategori | 1 | Category management |
-| 5 — Transaksi ⭐ | 5 | Core transaction system |
-| 6 — Petty Cash | 1 | Petty cash tracking |
-| 7 — Dashboard | 2 | Stats + charts |
-| 8 — Laporan | 2 | Report + export |
-| 9 — Notifications | 1 | In-app notifs |
-| 10 — Settings | 1 | Profile + user mgmt |
-| 11 — Testing | 2 | QA + test suite |
-| 12 — Deploy | 1 | Production launch |
-| **Total MVP** | **~22 days** | **Full MVP** |
+| Phase             | Days         | Deliverable             |
+| ----------------- | ------------ | ----------------------- |
+| 0 — Project Setup | 1            | Init repo, DB, config   |
+| 1 — Auth          | 2            | Login/Register          |
+| 2 — Kantor        | 2            | Multi-tenant CRUD       |
+| 3 — Layout        | 1            | Sidebar, topbar         |
+| 4 — Kategori      | 1            | Category management     |
+| 5 — Transaksi ⭐  | 5            | Core transaction system |
+| 6 — Petty Cash    | 1            | Petty cash tracking     |
+| 7 — Dashboard     | 2            | Stats + charts          |
+| 8 — Laporan       | 2            | Report + export         |
+| 9 — Notifications | 1            | In-app notifs           |
+| 10 — Settings     | 1            | Profile + user mgmt     |
+| 11 — Testing      | 2            | QA + test suite         |
+| 12 — Deploy       | 1            | Production launch       |
+| **Total MVP**     | **~22 days** | **Full MVP**            |
 
 ---
 
-*Document version: 2.0*
-*Last updated: 2026-05-25*
-*Author: Mimaaa SuperAgent*
+_Document version: 2.0_
+_Last updated: 2026-05-25_
+_Author: Mimaaa SuperAgent_
