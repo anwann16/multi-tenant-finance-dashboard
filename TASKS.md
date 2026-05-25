@@ -222,13 +222,13 @@
 - [ ] Unit test: petty-cash.service.test.ts
 
 ### T6.2 — Petty Cash Frontend
-- [ ] `src/app/(dashboard)/petty-cash/page.tsx` — Petty cash dashboard
-- [ ] `src/app/(dashboard)/petty-cash/topup/page.tsx` — Top-up form
-- [ ] `src/components/dashboard/PettyCashWidget.tsx` — Saldo card
-- [ ] `src/components/petty-cash/PettyCashLog.tsx` — Movement history
-- [ ] `src/components/petty-cash/PettyCashProgress.tsx` — Bar progress (saldo vs limit)
-- [ ] `src/hooks/usePettyCash.ts`
-- [ ] First commit: `feat(petty-cash): tracking + top-up + alerts`
+- [x] `src/app/(dashboard)/petty-cash/page.tsx` — Petty cash dashboard
+- [x] `src/app/(dashboard)/petty-cash/topup/page.tsx` — Top-up form
+- [x] `src/components/petty-cash/PettyCashWidget.tsx` — Saldo card
+- [x] `src/components/petty-cash/PettyCashLog.tsx` — Movement history
+- [x] `src/components/petty-cash/PettyCashProgress.tsx` — Bar progress (saldo vs limit)
+- [x] `src/hooks/usePettyCash.ts`
+- [x] First commit: `feat(petty-cash): tracking + top-up + alerts`
 
 ---
 
