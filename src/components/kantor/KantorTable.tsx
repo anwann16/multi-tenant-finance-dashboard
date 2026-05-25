@@ -23,7 +23,7 @@ export default function KantorTable({ kantors }: KantorTableProps) {
               <TableHead className="text-center">User</TableHead>
               <TableHead className="text-center">Transaksi</TableHead>
               <TableHead className="text-right">Petty Cash Limit</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead className="pl-6">Status</TableHead>
               <TableHead className="text-right">Aksi</TableHead>
             </TableRow>
           </TableHeader>
@@ -37,7 +37,7 @@ export default function KantorTable({ kantors }: KantorTableProps) {
                 <TableCell className="text-center tabular-nums">{kantor._count.userRoles}</TableCell>
                 <TableCell className="text-center tabular-nums">{kantor._count.transaksi}</TableCell>
                 <TableCell className="text-right tabular-nums">{formatCurrency(kantor.pettyCashLimit)}</TableCell>
-                <TableCell>
+                <TableCell className="pl-6">
                   <Badge variant={kantor.isActive ? "default" : "secondary"}>
                     {kantor.isActive ? "Aktif" : "Nonaktif"}
                   </Badge>
