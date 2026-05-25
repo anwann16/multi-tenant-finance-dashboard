@@ -44,15 +44,15 @@ export default function KategoriPieChart() {
         <CardTitle className="text-base font-semibold">Distribusi Pengeluaran</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[250px] sm:h-[300px] w-full">
+        <div className="h-[280px] sm:h-[330px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={MOCK_DATA}
                 cx="50%"
                 cy="45%"
-                innerRadius={55}
-                outerRadius={90}
+                innerRadius={70}
+                outerRadius={110}
                 paddingAngle={4}
                 dataKey="value"
                 nameKey="name"
