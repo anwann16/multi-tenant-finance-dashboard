@@ -113,6 +113,7 @@ model Kategori {
   kantor     Kantor        @relation(fields: [kantorId], references: [id])
   transaksi  Transaksi[]
 
+  @@unique([kantorId, name])
   @@map("kategori")
 }
 
