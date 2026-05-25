@@ -90,7 +90,7 @@ export default function TransaksiTable({ data }: TransaksiTableProps) {
       id: "aksi",
       header: "Aksi",
       cell: ({ row }) => (
-        <div className="text-center">
+        <div className="flex justify-center">
           <Link href={`/transaksi/${row.original.id}`}>
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <Eye className="h-4 w-4" />
