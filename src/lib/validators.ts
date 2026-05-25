@@ -29,7 +29,7 @@ export const TransaksiSchema = z.object({
   nominal: z.number().positive("Nominal harus lebih dari 0"),
   metodeBayar: z.enum(["TUNAI", "TRANSFER", "CARD"]),
   rekeningInfo: z.string().optional(),
-  isPettyCash: z.boolean().default(false),
+  isPettyCash: z.boolean(),
 });
 
 export const KategoriSchema = z.object({

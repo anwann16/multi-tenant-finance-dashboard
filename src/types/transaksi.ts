@@ -1,6 +1,8 @@
-import type { TransaksiType, MetodeBayar, TransaksiStatus } from "@/generated/prisma/enums";
+export type TransaksiType = "PEMASUKAN" | "PENGELUARAN";
+export type MetodeBayar = "TUNAI" | "TRANSFER" | "CARD";
+export type TransaksiStatus = "DRAFT" | "CONFIRMED" | "CANCELLED";
 
-export interface TransaksiWithType {
+export interface Transaksi {
   id: string;
   kantorId: string;
   userId: string;
@@ -14,11 +16,11 @@ export interface TransaksiWithType {
   rekeningInfo: string | null;
   status: TransaksiStatus;
   isPettyCash: boolean;
+  buktiFiles: string[];
   createdAt: string;
-  updatedAt: string;
 }
 
-export interface TransaksiWithRelations extends TransaksiWithType {
+export interface TransaksiWithRelations extends Transaksi {
   kategori: {
     id: string;
     name: string;
@@ -28,24 +30,22 @@ export interface TransaksiWithRelations extends TransaksiWithType {
   user: {
     id: string;
     name: string;
-    email: string;
   };
-  bukti: Array<{
-    id: string;
-    fileUrl: string;
-    fileName: string;
-    fileType: string;
-  }>;
 }
 
-export interface TransaksiFilter {
-  kantorId?: string;
-  type?: TransaksiType;
-  status?: TransaksiStatus;
-  tanggalAwal?: string;
-  tanggalAkhir?: string;
-  kategoriId?: string;
-  nominalMin?: number;
-  nominalMax?: number;
-  search?: string;
+export interface TransaksiFilterState {
+  search: string;
+  type: TransaksiType | "ALL";
+  status: TransaksiStatus | "ALL";
+  metodeBayar: MetodeBayar | "ALL";
+  kategoriId: string;
+  tanggalFrom: string;
+  tanggalTo: string;
+  nominalMin: string;
+  nominalMax: string;
+}
+
+export interface TransaksiSort {
+  field: "tanggal" | "nominal" | "createdAt";
+  direction: "asc" | "desc";
 }
