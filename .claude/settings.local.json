@@ -6,7 +6,17 @@
       "Read(//Users/macbook/Desktop/Project/**)",
       "Bash(npx create-next-app@latest multi-tenant-finance-dashboard --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --yes)",
       "Bash(mkdir -p _tmp_backup)",
-      "Bash(mv multi-tenant-finance-dashboard/CLAUDE.md multi-tenant-finance-dashboard/PRD.md multi-tenant-finance-dashboard/TASKS.md _tmp_backup/)"
+      "Bash(mv multi-tenant-finance-dashboard/CLAUDE.md multi-tenant-finance-dashboard/PRD.md multi-tenant-finance-dashboard/TASKS.md _tmp_backup/)",
+      "Bash(cp /Users/macbook/Desktop/Project/_tmp_backup/CLAUDE.md /Users/macbook/Desktop/Project/_tmp_backup/PRD.md /Users/macbook/Desktop/Project/_tmp_backup/TASKS.md /Users/macbook/Desktop/Project/multi-tenant-finance-dashboard/)",
+      "Bash(rm -rf /Users/macbook/Desktop/Project/_tmp_backup)",
+      "Bash(npm install *)",
+      "Bash(npx shadcn@latest *)",
+      "Bash(npx prisma *)",
+      "Bash(npm run *)",
+      "Bash(docker-compose up *)",
+      "Bash(git remote *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
     ]
   }
 }

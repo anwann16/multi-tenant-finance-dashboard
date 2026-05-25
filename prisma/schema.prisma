@@ -1,0 +1,237 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+}
+
+enum KantorRole {
+  ADMIN_KANTOR
+  FINANCE
+}
+
+enum TransaksiType {
+  PEMASUKAN
+  PENGELUARAN
+}
+
+enum MetodeBayar {
+  TUNAI
+  TRANSFER
+  CARD
+}
+
+enum TransaksiStatus {
+  DRAFT
+  CONFIRMED
+  CANCELLED
+}
+
+enum PettyCashType {
+  TOPUP
+  PENGELUARAN
+}
+
+enum NotifType {
+  TRANSACTION
+  ALERT
+  SYSTEM
+}
+
+model User {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String
+  email         String   @unique
+  avatar        String?
+  role          UserRole @default(ADMIN)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  kantorRoles   KantorUserRole[]
+  transaksi     Transaksi[]
+  pettyCashLog  PettyCashLog[]
+  notifications Notification[]
+  sessions      Session[]
+  accounts      Account[]
+  createdKantors Kantor[]
+
+  @@map("users")
+}
+
+model Kantor {
+  id              String   @id @default(uuid()) @db.Uuid
+  name            String
+  address         String?
+  description     String?
+  pettyCashLimit  Decimal  @default(0) @map("petty_cash_limit") @db.Decimal(15, 2)
+  isActive        Boolean  @default(true) @map("is_active")
+  createdById     String   @map("created_by") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  createdBy       User     @relation(fields: [createdById], references: [id])
+  userRoles       KantorUserRole[]
+  transaksi       Transaksi[]
+  kategori        Kategori[]
+  pettyCashLog    PettyCashLog[]
+
+  @@map("kantor")
+}
+
+model KantorUserRole {
+  id        String      @id @default(uuid()) @db.Uuid
+  userId    String      @map("user_id") @db.Uuid
+  kantorId  String      @map("kantor_id") @db.Uuid
+  role      KantorRole  @default(FINANCE)
+  isActive  Boolean     @default(true) @map("is_active")
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  user      User        @relation(fields: [userId], references: [id])
+  kantor    Kantor      @relation(fields: [kantorId], references: [id])
+
+  @@unique([userId, kantorId])
+  @@map("user_kantor_roles")
+}
+
+model Kategori {
+  id         String        @id @default(uuid()) @db.Uuid
+  kantorId   String        @map("kantor_id") @db.Uuid
+  name       String
+  type       TransaksiType
+  icon       String?
+  color      String?
+  isDefault  Boolean       @default(false) @map("is_default")
+  isActive   Boolean       @default(true) @map("is_active")
+  createdAt  DateTime      @default(now()) @map("created_at")
+
+  kantor     Kantor        @relation(fields: [kantorId], references: [id])
+  transaksi  Transaksi[]
+
+  @@map("kategori")
+}
+
+model Transaksi {
+  id               String          @id @default(uuid()) @db.Uuid
+  kantorId         String          @map("kantor_id") @db.Uuid
+  userId           String          @map("user_id") @db.Uuid
+  kategoriId       String          @map("kategori_id") @db.Uuid
+  type             TransaksiType
+  nomorTransaksi   String          @map("nomor_transaksi") @unique
+  tanggal          DateTime        @db.Date
+  deskripsi        String
+  nominal          Decimal         @db.Decimal(15, 2)
+  metodeBayar      MetodeBayar     @map("metode_bayar")
+  rekeningInfo     String?         @map("rekening_info")
+  status           TransaksiStatus @default(DRAFT)
+  isPettyCash      Boolean         @default(false) @map("is_petty_cash")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+
+  kantor           Kantor          @relation(fields: [kantorId], references: [id])
+  user             User            @relation(fields: [userId], references: [id])
+  kategori         Kategori        @relation(fields: [kategoriId], references: [id])
+  bukti            BuktiTransaksi[]
+  pettyCashRef     PettyCashLog[]
+
+  @@index([kantorId, tanggal])
+  @@index([kantorId, type])
+  @@index([status])
+  @@map("transaksi")
+}
+
+model BuktiTransaksi {
+  id           String     @id @default(uuid()) @db.Uuid
+  transaksiId  String     @map("transaksi_id") @db.Uuid
+  fileUrl      String     @map("file_url")
+  fileName     String     @map("file_name")
+  fileType     String     @map("file_type")
+  createdAt    DateTime   @default(now()) @map("created_at")
+
+  transaksi    Transaksi  @relation(fields: [transaksiId], references: [id])
+
+  @@map("bukti_transaksi")
+}
+
+model PettyCashLog {
+  id           String        @id @default(uuid()) @db.Uuid
+  kantorId     String        @map("kantor_id") @db.Uuid
+  type         PettyCashType
+  nominal      Decimal       @db.Decimal(15, 2)
+  deskripsi    String?
+  referenceId  String?       @map("reference_id") @db.Uuid
+  createdById  String        @map("created_by") @db.Uuid
+  createdAt    DateTime      @default(now()) @map("created_at")
+
+  kantor       Kantor        @relation(fields: [kantorId], references: [id])
+  transaksi    Transaksi?    @relation(fields: [referenceId], references: [id])
+  createdBy    User          @relation(fields: [createdById], references: [id])
+
+  @@index([kantorId, createdAt])
+  @@map("petty_cash_log")
+}
+
+model Notification {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  title        String
+  message      String
+  type         NotifType
+  isRead       Boolean   @default(false) @map("is_read")
+  referenceId  String?   @map("reference_id") @db.Uuid
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  user         User      @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRead])
+  @@map("notification")
+}
+
+model Session {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  token         String   @unique
+  expiresAt     DateTime @map("expires_at")
+  ipAddress     String?  @map("ip_address")
+  userAgent     String?  @map("user_agent")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  accountId     String   @map("account_id")
+  providerId    String   @map("provider_id")
+  password      String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([accountId, providerId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id            String   @id @default(uuid()) @db.Uuid
+  identifier    String
+  value         String
+  expiresAt     DateTime @map("expires_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([identifier, value])
+  @@map("verifications")
+}
