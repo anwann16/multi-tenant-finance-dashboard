@@ -11,7 +11,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { formatDateShort } from "@/lib/utils";
-import { TRANSAKSI_STATUS_OPTIONS, METODE_BAYAR_OPTIONS } from "@/lib/constants";
+import { METODE_BAYAR_OPTIONS } from "@/lib/constants";
 import type { TransaksiFilterState } from "@/types/transaksi";
 import type { Kategori } from "@/types/kategori";
 
@@ -32,12 +32,12 @@ export default function TransaksiFilter({ filters, onChange, kategoris }: Transa
 
   function clearFilters() {
     onChange({
-      search: "", type: "ALL", status: "ALL", metodeBayar: "ALL",
+      search: "", type: "ALL", metodeBayar: "ALL",
       kategoriId: "", tanggalFrom: "", tanggalTo: "", nominalMin: "", nominalMax: "",
     });
   }
 
-  const hasActiveFilters = filters.type !== "ALL" || filters.status !== "ALL" || filters.metodeBayar !== "ALL" ||
+  const hasActiveFilters = filters.type !== "ALL" || filters.metodeBayar !== "ALL" ||
     filters.kategoriId || filters.tanggalFrom || filters.tanggalTo || filters.nominalMin || filters.nominalMax;
 
   return (
@@ -82,20 +82,6 @@ export default function TransaksiFilter({ filters, onChange, kategoris }: Transa
                   <SelectItem value="ALL" label="Semua">Semua</SelectItem>
                   <SelectItem value="PENGELUARAN" label="Pengeluaran">Pengeluaran</SelectItem>
                   <SelectItem value="PEMASUKAN" label="Pemasukan">Pemasukan</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Status */}
-            <div className="space-y-1">
-              <Label className="text-xs">Status</Label>
-              <Select value={filters.status} onValueChange={(v) => { if (v) update("status", v); }}>
-                <SelectTrigger className="h-9 w-full"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL" label="Semua">Semua</SelectItem>
-                  {TRANSAKSI_STATUS_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value} label={o.label}>{o.label}</SelectItem>
-                  ))}
                 </SelectContent>
               </Select>
             </div>

@@ -12,7 +12,6 @@ const DEFAULT_FILTERS: LaporanFilterState = {
   tanggalFrom: "",
   tanggalTo: "",
   kategoriId: "",
-  status: "CONFIRMED",
   search: "",
 };
 
@@ -28,7 +27,6 @@ export default function LaporanPage() {
       if (filters.tanggalFrom && t.tanggal < filters.tanggalFrom) return false;
       if (filters.tanggalTo && t.tanggal > filters.tanggalTo) return false;
       if (filters.kategoriId && t.kategoriId !== filters.kategoriId) return false;
-      if (filters.status && filters.status !== "ALL" && t.status !== filters.status) return false;
       return true;
     });
   }, [filters]);

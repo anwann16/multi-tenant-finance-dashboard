@@ -12,14 +12,12 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDateShort } from "@/lib/utils";
-import { TRANSAKSI_STATUS_OPTIONS } from "@/lib/constants";
 import type { Kategori } from "@/types/kategori";
 
 export interface LaporanFilterState {
   tanggalFrom: string;
   tanggalTo: string;
   kategoriId: string;
-  status: string;
   search: string;
 }
 
@@ -108,19 +106,6 @@ export default function LaporanFilter({ filters, onChange, kategoris }: LaporanF
                   <SelectItem value="ALL" label="Semua Kategori">Semua Kategori</SelectItem>
                   {kategoris.map((k) => (
                     <SelectItem key={k.id} value={k.id} label={`${k.icon} ${k.name}`}>{k.icon} {k.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1">
-              <Label className="text-xs">Status</Label>
-              <Select value={filters.status || "ALL"} onValueChange={(v) => { if (v) update("status", v); }}>
-                <SelectTrigger className="h-10 w-full"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL" label="Semua Status">Semua Status</SelectItem>
-                  {TRANSAKSI_STATUS_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value} label={o.label}>{o.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

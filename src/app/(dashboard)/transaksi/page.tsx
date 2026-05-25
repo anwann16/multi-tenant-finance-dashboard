@@ -14,7 +14,7 @@ import type { TransaksiFilterState, TransaksiWithRelations } from "@/types/trans
 const MOCK_KANTOR_ID = "k1";
 
 const DEFAULT_FILTERS: TransaksiFilterState = {
-  search: "", type: "ALL", status: "ALL", metodeBayar: "ALL",
+  search: "", type: "ALL", metodeBayar: "ALL",
   kategoriId: "", tanggalFrom: "", tanggalTo: "", nominalMin: "", nominalMax: "",
 };
 
@@ -28,7 +28,6 @@ export default function TransaksiListPage() {
     if (!data) return [];
     return data.filter((t: TransaksiWithRelations) => {
       if (filters.type !== "ALL" && t.type !== filters.type) return false;
-      if (filters.status !== "ALL" && t.status !== filters.status) return false;
       if (filters.metodeBayar !== "ALL" && t.metodeBayar !== filters.metodeBayar) return false;
       if (filters.kategoriId && t.kategoriId !== filters.kategoriId) return false;
       if (filters.search && !t.deskripsi.toLowerCase().includes(filters.search.toLowerCase())) return false;
@@ -81,6 +80,14 @@ export default function TransaksiListPage() {
             {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(totalPemasukan - totalPengeluaran)}
           </p>
         </div>
+      </div>
+
+      {/* Flow clarification */}
+      <div className="rounded-lg border border-dashed border-primary/30 bg-primary/5 px-4 py-2.5">
+        <p className="text-xs text-muted-foreground">
+          Transaksi baru berstatus <span className="font-medium text-foreground">DRAFT</span>. Konfirmasi langsung{" "}
+          <span className="font-medium text-foreground">DRAFT → CONFIRMED</span> (tanpa approval).
+        </p>
       </div>
 
       {/* Filter */}

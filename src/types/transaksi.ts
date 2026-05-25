@@ -36,7 +36,6 @@ export interface TransaksiWithRelations extends Transaksi {
 export interface TransaksiFilterState {
   search: string;
   type: TransaksiType | "ALL";
-  status: TransaksiStatus | "ALL";
   metodeBayar: MetodeBayar | "ALL";
   kategoriId: string;
   tanggalFrom: string;
