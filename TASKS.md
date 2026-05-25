@@ -314,11 +314,11 @@
 - [ ] `src/services/user.service.ts`
 
 ### T10.2 — Settings Frontend
-- [ ] `src/app/(dashboard)/settings/page.tsx` — Profile settings
-- [ ] `src/app/(dashboard)/settings/users/page.tsx` — User list (admin global)
-- [ ] `src/components/settings/ProfileForm.tsx`
-- [ ] `src/components/settings/UserTable.tsx`
-- [ ] First commit: `feat(settings): profile + user management`
+- [x] `src/app/(dashboard)/settings/page.tsx` — Profile settings
+- [x] `src/app/(dashboard)/settings/users/page.tsx` — User list (admin global)
+- [x] `src/components/settings/ProfileForm.tsx`
+- [x] `src/components/settings/UserTable.tsx`
+- [x] First commit: `feat(settings): profile + user management`
 
 ---
 
