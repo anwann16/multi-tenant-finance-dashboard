@@ -138,7 +138,12 @@ export default function UserAssignDialog({ kantorId, users }: UserAssignDialogPr
       </DialogContent>
     </Dialog>
 
-      <AlertDialog open={!!removeTarget} onOpenChange={(open) => { if (!open) setRemoveTarget(null); }}>
+      <AlertDialog open={!!removeTarget} onOpenChange={(visible) => {
+        if (!visible) {
+          setRemoveTarget(null);
+          setOpen(true);
+        }
+      }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Hapus User</AlertDialogTitle>
