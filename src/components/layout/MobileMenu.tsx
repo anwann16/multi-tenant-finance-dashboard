@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/lib/store";
+import { useSession } from "@/hooks/useSession";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import {
   LayoutDashboard,
@@ -15,37 +16,28 @@ import {
   BarChart3,
   Settings,
   ChevronDown,
-  TrendingUp,
-  TrendingDown,
   Users,
 } from "lucide-react";
 
-const menuItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Kantor", href: "/kantor", icon: Building2 },
-  {
-    label: "Transaksi",
-    href: "/transaksi",
-    icon: Receipt,
-    children: [
-      { label: "Pengeluaran", href: "/transaksi/pengeluaran/new", icon: TrendingDown },
-      { label: "Pemasukan", href: "/transaksi/pemasukan/new", icon: TrendingUp },
-    ],
-  },
-  { label: "Petty Cash", href: "/petty-cash", icon: Wallet },
-  { label: "Kategori", href: "/kategori", icon: Tag },
-  { label: "Laporan", href: "/laporan", icon: BarChart3 },
+const allMenuItems = [
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["ADMIN", "FINANCE"] },
+  { label: "Kantor", href: "/kantor", icon: Building2, roles: ["ADMIN"] },
+  { label: "Transaksi", href: "/transaksi", icon: Receipt, roles: ["FINANCE"] },
+  { label: "Petty Cash", href: "/petty-cash", icon: Wallet, roles: ["FINANCE"] },
+  { label: "Kategori", href: "/kategori", icon: Tag, roles: ["ADMIN", "FINANCE"] },
+  { label: "Laporan", href: "/laporan", icon: BarChart3, roles: ["FINANCE"] },
   {
     label: "Settings",
     href: "/settings",
     icon: Settings,
+    roles: ["ADMIN", "FINANCE"],
     children: [
       { label: "Users", href: "/settings/users", icon: Users },
     ],
   },
 ];
 
-function MobileMenuItem({ item, onNavigate }: { item: (typeof menuItems)[number]; onNavigate: () => void }) {
+function MobileMenuItem({ item, onNavigate }: { item: (typeof allMenuItems)[number]; onNavigate: () => void }) {
   const pathname = usePathname();
   const isActive =
     pathname === item.href || pathname.startsWith(item.href + "/");
@@ -123,6 +115,9 @@ function MobileMenuItem({ item, onNavigate }: { item: (typeof menuItems)[number]
 
 export default function MobileMenu() {
   const { isMobileOpen, setMobileOpen } = useSidebarStore();
+  const { data: user } = useSession();
+  const role = user?.role ?? "FINANCE";
+  const menuItems = allMenuItems.filter((item) => item.roles.includes(role));
 
   return (
     <Sheet open={isMobileOpen} onOpenChange={setMobileOpen}>

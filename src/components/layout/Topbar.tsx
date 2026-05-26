@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LogOut, Menu } from "lucide-react";
+import { LogOut, Menu, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -13,29 +13,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSidebarStore } from "@/lib/store";
+import { useSession } from "@/hooks/useSession";
+import { useKantors } from "@/hooks/useKantor";
 import { authClient } from "@/lib/auth-client";
 import Breadcrumb from "./Breadcrumb";
 import NotificationBell from "./NotificationBell";
-
-interface SessionUser {
-  id: string;
-  name: string;
-  email: string;
-  image?: string | null;
-}
 
 export default function Topbar() {
   const { setMobileOpen } = useSidebarStore();
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
-  const [user, setUser] = useState<SessionUser | null>(null);
+  const { data: user } = useSession();
+  const { data: kantors } = useKantors();
 
-  useEffect(() => {
-    fetch("/api/auth/get-session")
-      .then((r) => r.json())
-      .then((d) => setUser(d?.user ?? null))
-      .catch(() => {});
-  }, []);
+  const isFinance = user?.role === "FINANCE";
+  const kantorNames = kantors?.map((k: { name: string }) => k.name) ?? [];
 
   const initials = user?.name
     ?.split(" ")
@@ -65,6 +57,14 @@ export default function Topbar() {
         <Breadcrumb />
       </div>
       <div className="flex items-center gap-2">
+        {isFinance && kantorNames.length > 0 && (
+          <div className="hidden items-center gap-1.5 rounded-lg border border-border/50 bg-muted/30 px-2.5 py-1 text-xs text-muted-foreground sm:flex">
+            <Building2 className="h-3 w-3" />
+            <span className="max-w-[150px] truncate font-medium">
+              {kantorNames.length === 1 ? kantorNames[0] : `${kantorNames.length} Kantor`}
+            </span>
+          </div>
+        )}
         <NotificationBell />
         <DropdownMenu>
           <DropdownMenuTrigger

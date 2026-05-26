@@ -87,6 +87,13 @@ export default function TransaksiTable({ data }: TransaksiTableProps) {
       cell: ({ row }) => <span>{row.original.metodeBayar}</span>,
     },
     {
+      accessorKey: "user",
+      header: "Dicatat oleh",
+      cell: ({ row }) => (
+        <span className="text-sm text-muted-foreground">{row.original.user.name}</span>
+      ),
+    },
+    {
       id: "aksi",
       header: "Aksi",
       cell: ({ row }) => (
@@ -150,9 +157,9 @@ export default function TransaksiTable({ data }: TransaksiTableProps) {
       </div>
 
       {/* Mobile + Tablet */}
-      <div className="space-y-2 lg:hidden">
+      <div className="lg:hidden divide-y divide-border/50">
         {table.getRowModel().rows.length === 0 ? (
-          <div className="rounded-xl border p-6 text-center text-sm text-muted-foreground">
+          <div className="p-6 text-center text-sm text-muted-foreground">
             Tidak ada transaksi
           </div>
         ) : (
@@ -162,26 +169,28 @@ export default function TransaksiTable({ data }: TransaksiTableProps) {
               <Link
                 key={row.id}
                 href={`/transaksi/${t.id}`}
-                className="flex items-center justify-between rounded-xl border p-4 transition-colors hover:bg-muted/50"
+                className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-muted/30 sm:px-6"
               >
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-muted-foreground">{t.nomorTransaksi}</span>
-                  </div>
-                  <p className="mt-1 truncate text-sm font-medium">{t.deskripsi}</p>
-                  <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                  t.type === "PEMASUKAN"
+                    ? "bg-emerald-500/10 text-emerald-600"
+                    : "bg-rose-500/10 text-rose-600"
+                }`}>
+                  {t.type === "PEMASUKAN" ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="truncate text-sm font-medium text-foreground">{t.deskripsi}</p>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <span>{t.kategori.icon} {t.kategori.name}</span>
                     <span>·</span>
                     <span>{formatDateShort(t.tanggal)}</span>
-                    <span>·</span>
-                    <span>{t.metodeBayar}</span>
                   </div>
                 </div>
-                <div className="ml-3 shrink-0 text-right">
-                  <p className={`text-sm font-medium tabular-nums ${t.type === "PEMASUKAN" ? "text-green-600" : "text-destructive"}`}>
-                    {t.type === "PEMASUKAN" ? "+" : "-"}{formatCurrency(t.nominal)}
-                  </p>
-                </div>
+                <span className={`text-sm font-semibold tabular-nums whitespace-nowrap ${
+                  t.type === "PEMASUKAN" ? "text-emerald-600" : "text-rose-600"
+                }`}>
+                  {t.type === "PEMASUKAN" ? "+" : "-"}{formatCurrency(t.nominal)}
+                </span>
               </Link>
             );
           })

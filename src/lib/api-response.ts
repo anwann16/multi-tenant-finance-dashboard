@@ -25,6 +25,7 @@ function processValue(data: unknown): unknown {
   if (typeof data === "number" || typeof data === "boolean") return data;
   if (Array.isArray(data)) return data.map(processValue);
   if (typeof data === "object") {
+    if (data instanceof Date) return data.toISOString();
     // Check for Prisma Decimal internal shape
     const keys = Object.keys(data);
     if (keys.includes("s") && keys.includes("e") && keys.includes("d") && Array.isArray((data as any).d)) {

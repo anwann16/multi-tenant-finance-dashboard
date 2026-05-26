@@ -58,7 +58,7 @@ export default function KategoriForm({ kantorId, kategori, trigger }: KategoriFo
 
     if (isEdit) {
       updateMutation.mutate(
-        { id: kategori.id, kantorId, ...payload },
+        { id: kategori.id, ...payload },
         {
           onSuccess: () => {
             toast.success("Kategori berhasil diupdate");

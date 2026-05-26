@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/lib/store";
+import { useSession } from "@/hooks/useSession";
 import {
   LayoutDashboard,
   Building2,
@@ -19,41 +20,48 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const menuItems = [
+const allMenuItems = [
   {
     label: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
+    roles: ["ADMIN", "FINANCE"],
   },
   {
     label: "Kantor",
     href: "/kantor",
     icon: Building2,
+    roles: ["ADMIN"],
   },
   {
     label: "Transaksi",
     href: "/transaksi",
     icon: Receipt,
+    roles: ["FINANCE"],
   },
   {
     label: "Petty Cash",
     href: "/petty-cash",
     icon: Wallet,
+    roles: ["FINANCE"],
   },
   {
     label: "Kategori",
     href: "/kategori",
     icon: Tag,
+    roles: ["ADMIN", "FINANCE"],
   },
   {
     label: "Laporan",
     href: "/laporan",
     icon: BarChart3,
+    roles: ["FINANCE"],
   },
   {
     label: "Settings",
     href: "/settings",
     icon: Settings,
+    roles: ["ADMIN", "FINANCE"],
     children: [
       { label: "Users", href: "/settings/users", icon: Users },
     ],
@@ -61,7 +69,7 @@ const menuItems = [
 ];
 
 interface SidebarItemProps {
-  item: (typeof menuItems)[number];
+  item: (typeof allMenuItems)[number];
   isCollapsed: boolean;
 }
 
@@ -73,7 +81,7 @@ function SidebarItem({ item, isCollapsed }: SidebarItemProps) {
 
   // Auto-open if any child route is active
   const isChildActive = item.children?.some(
-    (child) => pathname === child.href
+    (child: { label: string; href: string; icon: typeof Users }) => pathname === child.href
   );
   const [isOpen, setIsOpen] = useState(isChildActive);
 
@@ -109,7 +117,7 @@ function SidebarItem({ item, isCollapsed }: SidebarItemProps) {
         </button>
         {!isCollapsed && isOpen && (
           <div className="ml-4 space-y-1">
-            {item.children.map((child) => {
+            {item.children.map((child: { label: string; href: string; icon: typeof Users }) => {
               const isChildItemActive = pathname === child.href;
               return (
                 <Link
@@ -151,6 +159,9 @@ function SidebarItem({ item, isCollapsed }: SidebarItemProps) {
 
 export default function Sidebar() {
   const { isCollapsed, toggle } = useSidebarStore();
+  const { data: user } = useSession();
+  const role = user?.role ?? "FINANCE";
+  const menuItems = allMenuItems.filter((item) => item.roles.includes(role));
 
   return (
     <aside

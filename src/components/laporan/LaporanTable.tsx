@@ -19,15 +19,16 @@ export default function LaporanTable({ data }: LaporanTableProps) {
       <CardContent className="p-0">
         {/* Desktop table */}
         <div className="hidden lg:block overflow-x-auto">
-          <table className="w-full table-fixed">
+          <table className="w-full">
             <thead>
               <tr className="border-b bg-muted/30">
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-1/6">Tanggal</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-1/6">No. Transaksi</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-1/6">Deskripsi</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-1/6">Kategori</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-1/6">Metode</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground w-1/6">Nominal</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Tanggal</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">No. Transaksi</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Deskripsi</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Kategori</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Metode</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Dicatat oleh</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Nominal</th>
               </tr>
             </thead>
             <tbody>
@@ -43,6 +44,7 @@ export default function LaporanTable({ data }: LaporanTableProps) {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">{t.metodeBayar}</td>
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{t.user.name}</td>
                   <td className="px-4 py-3 text-left">
                     <span className={`inline-flex items-center gap-1 text-sm font-semibold tabular-nums ${
                       t.type === "PEMASUKAN" ? "text-emerald-600" : "text-rose-600"
@@ -60,7 +62,7 @@ export default function LaporanTable({ data }: LaporanTableProps) {
         {/* Mobile card list */}
         <div className="lg:hidden divide-y divide-border/50">
           {data.map((t) => (
-            <div key={t.id} className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-muted/30 sm:gap-4 sm:px-6">
+            <div key={t.id} className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-muted/30 sm:px-6">
               <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
                 t.type === "PEMASUKAN"
                   ? "bg-emerald-500/10 text-emerald-600"
@@ -70,13 +72,13 @@ export default function LaporanTable({ data }: LaporanTableProps) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="truncate text-sm font-medium text-foreground">{t.deskripsi}</p>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <span>{t.kategori.icon} {t.kategori.name}</span>
                   <span>·</span>
                   <span>{formatDateShort(t.tanggal)}</span>
                 </div>
               </div>
-              <span className={`text-sm font-semibold tabular-nums ${
+              <span className={`text-sm font-semibold tabular-nums whitespace-nowrap ${
                 t.type === "PEMASUKAN" ? "text-emerald-600" : "text-rose-600"
               }`}>
                 {t.type === "PEMASUKAN" ? "+" : "-"}{formatCurrency(t.nominal)}
