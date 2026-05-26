@@ -73,6 +73,7 @@ export default function TransaksiForm({ kantorId, open, onOpenChange }: Transaks
   function pickType(t: TransaksiType) {
     setType(t);
     setStep("form");
+    if (t === "PEMASUKAN") setIsPettyCash(false);
   }
 
   function onSubmit(data: TransaksiInput) {
@@ -238,13 +239,15 @@ export default function TransaksiForm({ kantorId, open, onOpenChange }: Transaks
                   </div>
                 )}
 
-                <div className="flex items-center justify-between rounded-lg border p-3">
-                  <div>
-                    <p className="text-sm font-medium">Petty Cash</p>
-                    <p className="text-xs text-muted-foreground">Gunakan dana petty cash</p>
+                {isPengeluaran && (
+                  <div className="flex items-center justify-between rounded-lg border p-3">
+                    <div>
+                      <p className="text-sm font-medium">Petty Cash</p>
+                      <p className="text-xs text-muted-foreground">Gunakan dana petty cash</p>
+                    </div>
+                    <Switch checked={isPettyCash} onCheckedChange={setIsPettyCash} />
                   </div>
-                  <Switch checked={isPettyCash} onCheckedChange={setIsPettyCash} />
-                </div>
+                )}
               </div>
 
               {/* Bukti Upload */}
