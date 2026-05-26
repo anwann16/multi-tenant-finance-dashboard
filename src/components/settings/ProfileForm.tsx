@@ -12,11 +12,16 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { ProfileSchema, ChangePasswordSchema, type ProfileInput, type ChangePasswordInput } from "@/lib/validators";
+import { updateUser, changePassword } from "@/lib/auth-client";
 import { formatDate } from "@/lib/utils";
-import type { UserProfile } from "./mock-data";
 
 interface ProfileFormProps {
-  profile: UserProfile;
+  profile: {
+    name: string;
+    email: string;
+    role: string;
+    createdAt: string;
+  };
 }
 
 export default function ProfileForm({ profile }: ProfileFormProps) {
@@ -35,18 +40,28 @@ export default function ProfileForm({ profile }: ProfileFormProps) {
 
   async function onProfileSubmit(data: ProfileInput) {
     setSavingProfile(true);
-    await new Promise((r) => setTimeout(r, 800));
-    console.log("Update profile:", data);
-    toast.success("Profile berhasil diupdate");
+    const { error } = await updateUser({ name: data.name });
+    if (error) {
+      toast.error(error.message || "Gagal update profile");
+    } else {
+      toast.success("Profile berhasil diupdate");
+    }
     setSavingProfile(false);
   }
 
   async function onPasswordSubmit(data: ChangePasswordInput) {
     setSavingPassword(true);
-    await new Promise((r) => setTimeout(r, 800));
-    console.log("Change password:", data);
-    toast.success("Password berhasil diubah");
-    passwordForm.reset();
+    const { error } = await changePassword({
+      currentPassword: data.currentPassword,
+      newPassword: data.newPassword,
+      revokeOtherSessions: false,
+    });
+    if (error) {
+      toast.error(error.message || "Gagal ubah password");
+    } else {
+      toast.success("Password berhasil diubah");
+      passwordForm.reset();
+    }
     setSavingPassword(false);
   }
 

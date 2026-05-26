@@ -2,9 +2,29 @@
 
 import { Settings } from "lucide-react";
 import ProfileForm from "@/components/settings/ProfileForm";
-import { MOCK_PROFILE } from "@/components/settings/mock-data";
+import { useSession } from "@/hooks/useSession";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SettingsPage() {
+  const { data: user, isLoading } = useSession();
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-10 w-10 rounded-lg" />
+          <div className="space-y-2">
+            <Skeleton className="h-7 w-40" />
+            <Skeleton className="h-4 w-60" />
+          </div>
+        </div>
+        <Skeleton className="h-64 rounded-xl" />
+      </div>
+    );
+  }
+
+  if (!user) return null;
+
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="flex items-center gap-3">
@@ -17,7 +37,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <ProfileForm profile={MOCK_PROFILE} />
+      <ProfileForm profile={user} />
     </div>
   );
 }

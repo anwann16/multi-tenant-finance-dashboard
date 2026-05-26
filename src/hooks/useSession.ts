@@ -8,6 +8,7 @@ interface SessionUser {
   email: string;
   image?: string | null;
   role: string;
+  createdAt: string;
 }
 
 export function useSession() {

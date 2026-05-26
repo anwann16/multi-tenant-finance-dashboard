@@ -60,7 +60,7 @@
 - [x] `src/lib/auth.ts` — Better Auth config (credentials provider + Prisma adapter)
 - [x] `src/app/api/auth/[[...all]]/route.ts` — Better Auth catch-all route handler
 - [ ] `src/app/api/auth/sign-up/route.ts` — Custom sign-up endpoint (if custom logic needed, otherwise Better Auth handles it)
-- [ ] `src/services/auth.service.ts` — signIn, signUp, getCurrentUser, signOut
+- [x] `src/services/auth.service.ts` — signIn, signUp, getCurrentUser, signOut
 - [x] Password hashing (bcrypt 12 rounds)
 - [x] Database session strategy (Better Auth manages sessions via Session/Account tables)
 - [x] Better Auth middleware integration (better-auth/middleware)
@@ -73,17 +73,17 @@
 - [x] `src/app/(auth)/register/page.tsx` — Register form (admin only first)
 - [x] `src/components/shared/AuthForm.tsx` — Reusable form component
 - [x] Form validation with Zod + react-hook-form
-- [ ] Error handling (wrong password, user not found)
-- [ ] Redirect after login → dashboard
-- [ ] Use Better Auth's built-in signUp.email() and signIn.email() client helpers
+- [x] Error handling (wrong password, user not found)
+- [x] Redirect after login → dashboard
+- [x] Use Better Auth's built-in signUp.email() and signIn.email() client helpers
 
 ### T1.3 — Middleware & Session
 
-- [ ] `src/middleware.ts` — Protect /dashboard routes
-- [ ] Better Auth session provider setup (from better-auth/react)
-- [ ] `useSession()` from better-auth/react
-- [ ] Logout functionality
-- [ ] First commit: `feat(auth): login/register with Better Auth`
+- [x] `src/middleware.ts` — Protect /dashboard routes
+- [x] Better Auth session provider setup (from better-auth/react)
+- [x] `useSession()` from better-auth/react
+- [x] Logout functionality
+- [x] First commit: `feat(auth): login/register with Better Auth`
 
 ---
 
