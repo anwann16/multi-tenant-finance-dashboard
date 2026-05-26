@@ -312,7 +312,7 @@ export async function getSaldoKantor(kantorId: string) {
 
   const result = await prisma.transaksi.groupBy({
     by: ["type"],
-    where: { kantorId, status: "CONFIRMED" },
+    where: { kantorId },
     _sum: { nominal: true },
   });
 
@@ -337,7 +337,7 @@ export async function getRunningBalance(kantorId: string) {
   await assertKantorAccess(session.user.id, kantorId);
 
   const transaksiList = await prisma.transaksi.findMany({
-    where: { kantorId, status: "CONFIRMED" },
+    where: { kantorId },
     orderBy: [{ tanggal: "asc" }, { createdAt: "asc" }],
     select: { id: true, type: true, nominal: true, tanggal: true },
   });

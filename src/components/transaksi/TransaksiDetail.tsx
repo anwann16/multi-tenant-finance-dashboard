@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, CheckCircle2, XCircle, Trash2, FileText } from "lucide-react";
+import { ArrowLeft, Trash2, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useUpdateTransaksiStatus, useDeleteTransaksi } from "@/hooks/useTransaksi";
+import { useDeleteTransaksi } from "@/hooks/useTransaksi";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { toast } from "sonner";
 import type { TransaksiWithRelations } from "@/types/transaksi";
@@ -29,9 +29,8 @@ const STATUS_MAP = {
 
 export default function TransaksiDetail({ transaksi }: TransaksiDetailProps) {
   const router = useRouter();
-  const updateStatus = useUpdateTransaksiStatus();
   const deleteTransaksi = useDeleteTransaksi();
-  const [actionTarget, setActionTarget] = useState<"confirm" | "cancel" | "delete" | null>(null);
+  const [actionTarget, setActionTarget] = useState<"delete" | null>(null);
 
   function handleAction() {
     if (!actionTarget) return;
@@ -40,11 +39,6 @@ export default function TransaksiDetail({ transaksi }: TransaksiDetailProps) {
       deleteTransaksi.mutate(
         { id: transaksi.id, kantorId: transaksi.kantorId },
         { onSuccess: () => { toast.success("Transaksi dihapus"); router.push("/transaksi"); } }
-      );
-    } else {
-      updateStatus.mutate(
-        { id: transaksi.id, kantorId: transaksi.kantorId, action: actionTarget === "confirm" ? "confirm" : "cancel" },
-        { onSuccess: () => { toast.success(actionTarget === "confirm" ? "Transaksi dikonfirmasi" : "Transaksi dibatalkan"); setActionTarget(null); } }
       );
     }
   }
@@ -145,42 +139,28 @@ export default function TransaksiDetail({ transaksi }: TransaksiDetailProps) {
       )}
 
       {/* Actions */}
-      {transaksi.status === "DRAFT" && (
-        <div className="flex flex-wrap justify-center gap-2 sm:justify-end">
-          <Button variant="outline" size="sm" onClick={() => setActionTarget("confirm")}>
-            <CheckCircle2 className="mr-2 h-4 w-4" />Konfirmasi
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setActionTarget("cancel")}>
-            <XCircle className="mr-2 h-4 w-4" />Batalkan
-          </Button>
-          <Button variant="outline" size="sm" className="text-destructive hover:text-destructive" onClick={() => setActionTarget("delete")}>
-            <Trash2 className="mr-2 h-4 w-4" />Hapus
-          </Button>
-        </div>
-      )}
+      <div className="flex flex-wrap justify-center gap-2 sm:justify-end">
+        <Button variant="outline" size="sm" className="text-destructive hover:text-destructive" onClick={() => setActionTarget("delete")}>
+          <Trash2 className="mr-2 h-4 w-4" />Hapus
+        </Button>
+      </div>
 
-      {/* Confirmation Dialog */}
+      {/* Delete Dialog */}
       <AlertDialog open={!!actionTarget} onOpenChange={(v) => { if (!v) setActionTarget(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              {actionTarget === "confirm" ? "Konfirmasi Transaksi" : actionTarget === "cancel" ? "Batalkan Transaksi" : "Hapus Transaksi"}
-            </AlertDialogTitle>
+            <AlertDialogTitle>Hapus Transaksi</AlertDialogTitle>
             <AlertDialogDescription>
-              {actionTarget === "confirm"
-                ? "Yakin ingin mengonfirmasi transaksi ini? Status akan berubah menjadi Confirmed."
-                : actionTarget === "cancel"
-                ? "Yakin ingin membatalkan transaksi ini? Status akan berubah menjadi Cancelled."
-                : "Yakin ingin menghapus transaksi ini? Tindakan tidak dapat dibatalkan."}
+              Yakin ingin menghapus transaksi ini? Tindakan tidak dapat dibatalkan.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Batal</AlertDialogCancel>
             <AlertDialogAction
-              className={actionTarget === "delete" ? "bg-destructive text-white hover:bg-destructive/90" : ""}
+              className="bg-destructive text-white hover:bg-destructive/90"
               onClick={handleAction}
             >
-              {actionTarget === "confirm" ? "Konfirmasi" : actionTarget === "cancel" ? "Batalkan" : "Hapus"}
+              Hapus
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -105,7 +105,7 @@ export async function GET() {
         }),
         prisma.transaksi.groupBy({
           by: ["type"],
-          where: { kantorId: { in: kantorIds }, status: "CONFIRMED" },
+          where: { kantorId: { in: kantorIds } },
           _sum: { nominal: true },
         }),
       ]);
