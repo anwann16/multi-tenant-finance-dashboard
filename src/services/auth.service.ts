@@ -49,7 +49,7 @@ export async function changePassword(input: { currentPassword: string; newPasswo
 
   const session = await requireAuth();
   const account = await prisma.account.findFirst({
-    where: { userId: session.user.id, providerId: "credentials" },
+    where: { userId: session.user.id, providerId: "credential" },
     select: { id: true, password: true },
   });
   if (!account?.password) throw new Error("Akun tidak memiliki password");

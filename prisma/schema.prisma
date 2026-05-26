@@ -53,7 +53,7 @@ model User {
   email         String   @unique
   emailVerified Boolean  @default(false)
   image         String?
-  role          UserRole @default(ADMIN)
+  role          UserRole @default(FINANCE)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -156,7 +156,7 @@ model Kategori {
   kantor     Kantor        @relation(fields: [kantorId], references: [id])
   transaksi  Transaksi[]
 
-  @@unique([kantorId, name])
+  @@unique([kantorId, name, type])
 }
 
 model Transaksi {

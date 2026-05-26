@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +36,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const isLogin = mode === "login";
 
@@ -62,6 +64,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
         return;
       }
 
+      await queryClient.invalidateQueries({ queryKey: ["session"] });
       router.push("/dashboard");
       router.refresh();
     } else {
@@ -139,7 +142,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             <Input
               id="password"
               type="password"
-              placeholder="Minimal 6 karakter"
+              placeholder="Minimal 8 karakter"
               {...form.register("password")}
             />
             {form.formState.errors.password && (

@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { UserPlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -24,13 +23,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useAssignUser, useUnassignUser } from "@/hooks/useKantor";
 import type { UserKantorRole } from "@/types/kantor";
 
@@ -42,7 +34,6 @@ interface UserAssignDialogProps {
 export default function UserAssignDialog({ kantorId, users }: UserAssignDialogProps) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"ADMIN_KANTOR" | "FINANCE">("FINANCE");
   const assignMutation = useAssignUser();
   const unassignMutation = useUnassignUser();
   const [removeTarget, setRemoveTarget] = useState<UserKantorRole | null>(null);
@@ -51,11 +42,10 @@ export default function UserAssignDialog({ kantorId, users }: UserAssignDialogPr
   function handleAssign() {
     if (!email) return;
     assignMutation.mutate(
-      { kantorId, email, role },
+      { kantorId, email, role: "FINANCE" },
       {
         onSuccess: () => {
           setEmail("");
-          setRole("FINANCE");
         },
       }
     );
@@ -86,19 +76,11 @@ export default function UserAssignDialog({ kantorId, users }: UserAssignDialogPr
               onChange={(e) => setEmail(e.target.value)}
               className="flex-1"
             />
-            <Select value={role} onValueChange={(v) => setRole(v as typeof role)}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="FINANCE">Finance</SelectItem>
-                <SelectItem value="ADMIN_KANTOR">Admin Kantor</SelectItem>
-              </SelectContent>
-            </Select>
             <Button onClick={handleAssign} disabled={!email || assignMutation.isPending}>
               {assignMutation.isPending ? "..." : "Assign"}
             </Button>
           </div>
+          <p className="text-xs text-muted-foreground">Role: <span className="font-medium text-green-600">Finance</span> (default)</p>
         </div>
 
         {/* User list */}
@@ -121,14 +103,16 @@ export default function UserAssignDialog({ kantorId, users }: UserAssignDialogPr
                     {!ur.isActive && (
                       <Badge variant="outline" className="text-muted-foreground">Inactive</Badge>
                     )}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive"
-                      onClick={() => { isRemovingRef.current = true; setOpen(false); setRemoveTarget(ur); }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {ur.role !== "ADMIN_KANTOR" && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive hover:text-destructive"
+                        onClick={() => { isRemovingRef.current = true; setOpen(false); setRemoveTarget(ur); }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}

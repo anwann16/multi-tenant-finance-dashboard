@@ -20,6 +20,7 @@ export function useSession() {
       const data = await res.json();
       return (data?.user as SessionUser) ?? null;
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30 * 1000,
+    refetchOnWindowFocus: true,
   });
 }

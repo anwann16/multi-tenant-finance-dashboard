@@ -12,10 +12,10 @@ async function requireAuth() {
   return session;
 }
 
-/** Return IDs of kantors the user has an active role in (empty = global admin). */
-async function getUserKantorIds(userId: string): Promise<string[]> {
+/** Return IDs of kantors the user has an active role in (null = global admin). */
+async function getUserKantorIds(userId: string): Promise<string[] | null> {
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (user?.role === "ADMIN") return []; // global admin → no restriction
+  if (user?.role === "ADMIN") return null; // global admin → no restriction
   const roles = await prisma.kantorUserRole.findMany({
     where: { userId, isActive: true },
     select: { kantorId: true },
@@ -125,8 +125,12 @@ export async function getKantors({
   const where: Prisma.KantorWhereInput = { isActive: true };
 
   // Tenant isolation: non-global-admin only sees assigned kantors
-  if (userKantorIds.length > 0) {
-    where.id = { in: userKantorIds };
+  if (userKantorIds !== null) {
+    if (userKantorIds.length > 0) {
+      where.id = { in: userKantorIds };
+    } else {
+      where.id = { in: [] };
+    }
   }
 
   if (search) {

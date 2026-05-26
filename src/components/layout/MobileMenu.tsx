@@ -6,6 +6,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/lib/store";
 import { useSession } from "@/hooks/useSession";
+import { useKantors } from "@/hooks/useKantor";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import {
   LayoutDashboard,
@@ -23,10 +24,10 @@ import {
 const allMenuItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["ADMIN", "FINANCE"] },
   { label: "Kantor", href: "/kantor", icon: Building2, roles: ["ADMIN"] },
-  { label: "Transaksi", href: "/transaksi", icon: Receipt, roles: ["FINANCE"] },
-  { label: "Petty Cash", href: "/petty-cash", icon: Wallet, roles: ["FINANCE"] },
-  { label: "Kategori", href: "/kategori", icon: Tag, roles: ["ADMIN", "FINANCE"] },
-  { label: "Laporan", href: "/laporan", icon: BarChart3, roles: ["FINANCE"] },
+  { label: "Transaksi", href: "/transaksi", icon: Receipt, roles: ["FINANCE"], requiresKantor: true },
+  { label: "Petty Cash", href: "/petty-cash", icon: Wallet, roles: ["FINANCE"], requiresKantor: true },
+  { label: "Kategori", href: "/kategori", icon: Tag, roles: ["ADMIN", "FINANCE"], requiresKantor: true },
+  { label: "Laporan", href: "/laporan", icon: BarChart3, roles: ["FINANCE"], requiresKantor: true },
   { label: "Profile", href: "/settings/profile", icon: User, roles: ["ADMIN", "FINANCE"] },
   {
     label: "Settings",
@@ -125,8 +126,12 @@ function MobileMenuItem({ item, onNavigate }: { item: (typeof allMenuItems)[numb
 export default function MobileMenu() {
   const { isMobileOpen, setMobileOpen } = useSidebarStore();
   const { data: user } = useSession();
+  const { data: kantors } = useKantors();
   const role = user?.role ?? "FINANCE";
-  const menuItems = allMenuItems.filter((item) => item.roles.includes(role));
+  const hasKantor = (kantors?.length ?? 0) > 0;
+  const menuItems = allMenuItems.filter(
+    (item) => item.roles.includes(role) && (!item.requiresKantor || hasKantor)
+  );
 
   return (
     <Sheet open={isMobileOpen} onOpenChange={setMobileOpen}>

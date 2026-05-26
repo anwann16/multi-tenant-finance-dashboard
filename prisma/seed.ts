@@ -8,164 +8,45 @@ const adapter = new PrismaPg({
 });
 const prisma = new PrismaClient({ adapter });
 
-const defaultPengeluaran = [
-  { name: "Gaji & THR", icon: "💰", color: "#22C55E" },
-  { name: "Sewa & Utilitas", icon: "🏠", color: "#3B82F6" },
-  { name: "ATK & Office Supply", icon: "📎", color: "#A855F7" },
-  { name: "Transport & Perjalanan", icon: "🚗", color: "#F97316" },
-  { name: "Makan & Minum", icon: "🍔", color: "#EC4899" },
-  { name: "Marketing & Promosi", icon: "📢", color: "#EAB308" },
-  { name: "Maintenance & Perbaikan", icon: "🔧", color: "#6B7280" },
-  { name: "Lainnya", icon: "📦", color: "#64748B" },
-];
-
-const defaultPemasukan = [
-  { name: "Penjualan Produk", icon: "🛒", color: "#22C55E" },
-  { name: "Servis & Konsultasi", icon: "💼", color: "#3B82F6" },
-  { name: "Pinjaman Masuk", icon: "🏦", color: "#A855F7" },
-  { name: "Investasi & Dividen", icon: "📈", color: "#F97316" },
-  { name: "Donasi / Hibah", icon: "🎁", color: "#EC4899" },
-  { name: "Lainnya", icon: "📦", color: "#64748B" },
-];
-
 async function main() {
-  const DEFAULT_PASSWORD = "password123";
-  const hashedPassword = await hashPassword(DEFAULT_PASSWORD);
+  // Delete all existing data
+  await prisma.$transaction([
+    prisma.notification.deleteMany(),
+    prisma.pettyCashLog.deleteMany(),
+    prisma.transaksi.deleteMany(),
+    prisma.kategori.deleteMany(),
+    prisma.kantorUserRole.deleteMany(),
+    prisma.kantor.deleteMany(),
+    prisma.account.deleteMany(),
+    prisma.session.deleteMany(),
+    prisma.user.deleteMany(),
+  ]);
+  console.log("✅ All existing data deleted");
 
-  // 1. Create users
-  const usersData = [
-    { name: "Super Admin", email: "superadmin@kantor.com", role: "ADMIN" as const },
-    { name: "Admin Utama", email: "admin@kantor.com", role: "ADMIN" as const },
-    { name: "Andi Kurniawan", email: "andi@kantor.com", role: "FINANCE" as const },
-    { name: "Sari Dewi", email: "sari@kantor.com", role: "FINANCE" as const },
-  ];
-
-  const users: { id: string; email: string; name: string }[] = [];
-  for (const u of usersData) {
-    const user = await prisma.user.upsert({
-      where: { email: u.email },
-      update: { role: u.role },
-      create: { name: u.name, email: u.email, role: u.role },
-    });
-    users.push(user);
-    console.log("User:", user.name, user.email);
-  }
-  // Create credential accounts with fresh password hashes
-  await prisma.session.deleteMany();
-  await prisma.account.deleteMany();
-  await prisma.verification.deleteMany();
-  for (const u of usersData) {
-    const user = await prisma.user.findUnique({ where: { email: u.email } });
-    await prisma.account.create({
-      data: {
-        userId: user!.id,
-        accountId: u.email,
-        providerId: "credential",
-        password: hashedPassword,
-      },
-    });
-  }
-  console.log("Accounts with password created for all users");
-
-  const [superadmin, admin, finance1, finance2] = users;
-
-  // 2. Create default kantor
-  const kantor = await prisma.kantor.upsert({
-    where: { id: "00000000-0000-0000-0000-000000000001" },
-    update: {},
-    create: {
-      id: "00000000-0000-0000-0000-000000000001",
-      name: "Kantor Pusat",
-      address: "Jl. Jenderal Sudirman No. 1, Jakarta",
-      description: "Kantor pusat operasional",
-      pettyCashLimit: 5000000,
-      createdById: admin.id,
+  // Create 1 admin user
+  const hashedPassword = await hashPassword("admin1234");
+  const admin = await prisma.user.create({
+    data: {
+      name: "Admin",
+      email: "admin@kantor.com",
+      role: "ADMIN",
+      emailVerified: true,
     },
   });
-  console.log("Default kantor:", kantor.id, kantor.name);
-
-  // 3. Assign users to kantor
-  const usersToAssign = [
-    { user: superadmin, role: "ADMIN_KANTOR" as const },
-    { user: admin, role: "ADMIN_KANTOR" as const },
-    { user: finance1, role: "FINANCE" as const },
-    { user: finance2, role: "FINANCE" as const },
-  ];
-
-  for (const { user, role } of usersToAssign) {
-    await prisma.kantorUserRole.upsert({
-      where: {
-        userId_kantorId: { userId: user.id, kantorId: kantor.id },
-      },
-      update: {},
-      create: {
-        userId: user.id,
-        kantorId: kantor.id,
-        role,
-      },
-    });
-  }
-  console.log("Users assigned to kantor:", usersToAssign.length);
-
-  // 4. Create default kategoris
-  let kategoriCount = 0;
-  for (const k of defaultPengeluaran) {
-    await prisma.kategori.upsert({
-      where: {
-        kantorId_name: { kantorId: kantor.id, name: k.name },
-      },
-      update: {},
-      create: {
-        kantorId: kantor.id,
-        name: k.name,
-        type: "PENGELUARAN",
-        icon: k.icon,
-        color: k.color,
-        isDefault: true,
-      },
-    });
-    kategoriCount++;
-  }
-
-  for (const k of defaultPemasukan) {
-    await prisma.kategori.upsert({
-      where: {
-        kantorId_name: { kantorId: kantor.id, name: k.name },
-      },
-      update: {},
-      create: {
-        kantorId: kantor.id,
-        name: k.name,
-        type: "PEMASUKAN",
-        icon: k.icon,
-        color: k.color,
-        isDefault: true,
-      },
-    });
-    kategoriCount++;
-  }
-  console.log("Default kategoris:", kategoriCount);
-
-  // 5. Verify tables
-  const counts = await Promise.all([
-    prisma.user.count(),
-    prisma.kantor.count(),
-    prisma.kategori.count(),
-    prisma.kantorUserRole.count(),
-  ]);
-  console.log("\n=== Verification ===");
-  console.log("Users:", counts[0]);
-  console.log("Kantors:", counts[1]);
-  console.log("Kategoris:", counts[2]);
-  console.log("KantorUserRoles:", counts[3]);
-  console.log("All tables created successfully!");
+  await prisma.account.create({
+    data: {
+      userId: admin.id,
+      accountId: "admin@kantor.com",
+      providerId: "credential",
+      password: hashedPassword,
+    },
+  });
+  console.log(`✅ Admin user created: admin@kantor.com / admin1234`);
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error("❌ Seed failed:", e);
     process.exit(1);
   })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .finally(() => prisma.$disconnect());

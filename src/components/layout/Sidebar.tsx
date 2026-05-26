@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/lib/store";
 import { useSession } from "@/hooks/useSession";
+import { useKantors } from "@/hooks/useKantor";
 import {
   LayoutDashboard,
   Building2,
@@ -39,24 +40,28 @@ const allMenuItems = [
     href: "/transaksi",
     icon: Receipt,
     roles: ["FINANCE"],
+    requiresKantor: true,
   },
   {
     label: "Petty Cash",
     href: "/petty-cash",
     icon: Wallet,
     roles: ["FINANCE"],
+    requiresKantor: true,
   },
   {
     label: "Kategori",
     href: "/kategori",
     icon: Tag,
     roles: ["ADMIN", "FINANCE"],
+    requiresKantor: true,
   },
   {
     label: "Laporan",
     href: "/laporan",
     icon: BarChart3,
     roles: ["FINANCE"],
+    requiresKantor: true,
   },
   {
     label: "Profile",
@@ -173,8 +178,12 @@ function SidebarItem({ item, isCollapsed }: SidebarItemProps) {
 export default function Sidebar() {
   const { isCollapsed, toggle } = useSidebarStore();
   const { data: user } = useSession();
+  const { data: kantors } = useKantors();
   const role = user?.role ?? "FINANCE";
-  const menuItems = allMenuItems.filter((item) => item.roles.includes(role));
+  const hasKantor = (kantors?.length ?? 0) > 0;
+  const menuItems = allMenuItems.filter(
+    (item) => item.roles.includes(role) && (!item.requiresKantor || hasKantor)
+  );
 
   return (
     <aside

@@ -2,13 +2,13 @@ import { z } from "zod";
 
 export const LoginSchema = z.object({
   email: z.string().email("Email tidak valid"),
-  password: z.string().min(6, "Password minimal 6 karakter"),
+  password: z.string().min(8, "Password minimal 8 karakter"),
 });
 
 export const RegisterSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter"),
   email: z.string().email("Email tidak valid"),
-  password: z.string().min(6, "Password minimal 6 karakter"),
+  password: z.string().min(8, "Password minimal 8 karakter"),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Password tidak cocok",
@@ -55,8 +55,8 @@ export const ProfileSchema = z.object({
 });
 
 export const ChangePasswordSchema = z.object({
-  currentPassword: z.string().min(6, "Password minimal 6 karakter"),
-  newPassword: z.string().min(6, "Password baru minimal 6 karakter"),
+  currentPassword: z.string().min(8, "Password minimal 8 karakter"),
+  newPassword: z.string().min(8, "Password baru minimal 8 karakter"),
   confirmPassword: z.string(),
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: "Password tidak cocok",

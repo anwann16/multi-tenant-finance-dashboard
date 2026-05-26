@@ -18,6 +18,7 @@ import { useKantors } from "@/hooks/useKantor";
 import { authClient } from "@/lib/auth-client";
 import Breadcrumb from "./Breadcrumb";
 import NotificationBell from "./NotificationBell";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Topbar() {
   const { setMobileOpen } = useSidebarStore();
@@ -25,6 +26,7 @@ export default function Topbar() {
   const [loggingOut, setLoggingOut] = useState(false);
   const { data: user } = useSession();
   const { data: kantors } = useKantors();
+  const queryClient = useQueryClient();
 
   const isFinance = user?.role === "FINANCE";
   const kantorNames = kantors?.map((k: { name: string }) => k.name) ?? [];
@@ -39,6 +41,7 @@ export default function Topbar() {
   async function handleLogout() {
     setLoggingOut(true);
     await authClient.signOut();
+    queryClient.clear();
     router.push("/login");
     router.refresh();
   }
