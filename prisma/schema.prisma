@@ -170,6 +170,7 @@ model Transaksi {
   deskripsi        String
   nominal          Decimal         @db.Decimal(15, 2)
   metodeBayar      MetodeBayar
+  isPettyCash      Boolean         @default(false)
   status           TransaksiStatus @default(DRAFT)
   referenceId      String?
   createdAt        DateTime        @default(now())

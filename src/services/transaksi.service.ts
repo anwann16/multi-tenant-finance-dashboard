@@ -21,10 +21,10 @@ async function assertKantorAccess(userId: string, kantorId: string) {
   if (!role || !role.isActive) throw new Error("Forbidden: no access to this kantor");
 }
 
-/** Map Prisma transaksi to API response shape (referenceId → rekeningInfo, add isPettyCash). */
+/** Map Prisma transaksi to API response shape (referenceId → rekeningInfo). */
 function toTransaksiResponse(t: any) {
   const { referenceId, ...rest } = t;
-  return { ...rest, rekeningInfo: referenceId ?? null, isPettyCash: false };
+  return { ...rest, rekeningInfo: referenceId ?? null };
 }
 
 function formatDate(d: Date): string {
@@ -205,6 +205,7 @@ export async function createTransaksi(
   }
 
   return prisma.$transaction(async (tx) => {
+    const isPettyCash = parsed.isPettyCash && input.type === "PENGELUARAN";
     const transaksi = await tx.transaksi.create({
       data: {
         kantorId,
@@ -217,6 +218,7 @@ export async function createTransaksi(
         nominal: parsed.nominal,
         metodeBayar: parsed.metodeBayar,
         referenceId: parsed.rekeningInfo ?? null,
+        isPettyCash,
       },
       include: {
         kategori: { select: { id: true, name: true, icon: true, color: true } },
@@ -351,7 +353,7 @@ export async function getSaldoKantor(kantorId: string) {
 
   const result = await prisma.transaksi.groupBy({
     by: ["type"],
-    where: { kantorId },
+    where: { kantorId, isPettyCash: false },
     _sum: { nominal: true },
   });
 
@@ -376,7 +378,7 @@ export async function getRunningBalance(kantorId: string) {
   await assertKantorAccess(session.user.id, kantorId);
 
   const transaksiList = await prisma.transaksi.findMany({
-    where: { kantorId },
+    where: { kantorId, isPettyCash: false },
     orderBy: [{ tanggal: "asc" }, { createdAt: "asc" }],
     select: { id: true, type: true, nominal: true, tanggal: true },
   });

@@ -81,6 +81,7 @@ export async function GET() {
             kantorId: { in: kantorIds },
             type: "PENGELUARAN",
             tanggal: { gte: startOfMonth },
+            isPettyCash: false,
           },
           _sum: { nominal: true },
         }),
@@ -103,7 +104,7 @@ export async function GET() {
         }),
         prisma.transaksi.groupBy({
           by: ["type"],
-          where: { kantorId: { in: kantorIds } },
+          where: { kantorId: { in: kantorIds }, isPettyCash: false },
           _sum: { nominal: true },
         }),
       ]);

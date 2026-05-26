@@ -45,6 +45,7 @@ export async function GET(request: Request) {
             where: {
               kantorId: { in: kantorIds },
               tanggal: { gte: m.start, lte: m.end },
+              isPettyCash: false,
             },
             _sum: { nominal: true },
           })
@@ -82,6 +83,7 @@ export async function GET(request: Request) {
             where: {
               kantorId: { in: kantorIds },
               tanggal: { gte: w.start, lte: w.end },
+              isPettyCash: false,
             },
             _sum: { nominal: true },
           })
@@ -118,6 +120,7 @@ export async function GET(request: Request) {
             where: {
               kantorId: { in: kantorIds },
               tanggal: { gte: day.start, lte: day.end },
+              isPettyCash: false,
             },
             _sum: { nominal: true },
           })
@@ -145,6 +148,7 @@ export async function GET(request: Request) {
         kantorId: { in: kantorIds },
         type: "PENGELUARAN",
         tanggal: { gte: startOfMonth },
+        isPettyCash: false,
       },
       _sum: { nominal: true },
       _count: true,
