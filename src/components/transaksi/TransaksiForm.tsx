@@ -79,17 +79,13 @@ export default function TransaksiForm({ kantorId, open, onOpenChange }: Transaks
     if (!type) return;
     createMutation.mutate({
       kantorId,
-      userId: "u1",
       type,
-      nomorTransaksi: `${isPengeluaran ? "Pengeluaran" : "Pemasukan"}-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, "0")}-001`,
       tanggal: selectedDate.toISOString().split("T")[0],
       deskripsi: data.deskripsi,
       nominal: data.nominal,
       metodeBayar: data.metodeBayar,
-      rekeningInfo: data.rekeningInfo || null,
-      status: "DRAFT",
+      rekeningInfo: data.rekeningInfo || undefined,
       isPettyCash,
-      buktiFiles: files.map((f) => f.name),
       kategoriId: data.kategoriId,
     }, {
       onSuccess: () => {

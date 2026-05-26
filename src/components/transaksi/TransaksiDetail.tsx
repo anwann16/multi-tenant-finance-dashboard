@@ -43,7 +43,7 @@ export default function TransaksiDetail({ transaksi }: TransaksiDetailProps) {
       );
     } else {
       updateStatus.mutate(
-        { id: transaksi.id, kantorId: transaksi.kantorId, status: actionTarget === "confirm" ? "CONFIRMED" : "CANCELLED" },
+        { id: transaksi.id, kantorId: transaksi.kantorId, action: actionTarget === "confirm" ? "confirm" : "cancel" },
         { onSuccess: () => { toast.success(actionTarget === "confirm" ? "Transaksi dikonfirmasi" : "Transaksi dibatalkan"); setActionTarget(null); } }
       );
     }
@@ -128,15 +128,15 @@ export default function TransaksiDetail({ transaksi }: TransaksiDetailProps) {
       </Card>
 
       {/* Bukti */}
-      {transaksi.buktiFiles.length > 0 && (
+      {transaksi.bukti.length > 0 && (
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Bukti Transaksi</CardTitle></CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {transaksi.buktiFiles.map((file, i) => (
-                <div key={i} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm">
+              {transaksi.bukti.map((b) => (
+                <div key={b.id} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm">
                   <FileText className="h-4 w-4 text-muted-foreground" />
-                  {file}
+                  {b.fileName}
                 </div>
               ))}
             </div>

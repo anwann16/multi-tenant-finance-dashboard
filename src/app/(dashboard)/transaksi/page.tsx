@@ -1,17 +1,16 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Receipt, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTransaksiList } from "@/hooks/useTransaksi";
 import { useKategoris } from "@/hooks/useKategori";
+import { useKantorSelection } from "@/lib/store";
 import TransaksiTable from "@/components/transaksi/TransaksiTable";
 import TransaksiFilter from "@/components/transaksi/TransaksiFilter";
 import TransaksiForm from "@/components/transaksi/TransaksiForm";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { TransaksiFilterState, TransaksiWithRelations } from "@/types/transaksi";
-
-const MOCK_KANTOR_ID = "k1";
+import type { TransaksiFilterState } from "@/types/transaksi";
 
 const DEFAULT_FILTERS: TransaksiFilterState = {
   search: "", type: "ALL", metodeBayar: "ALL",
@@ -19,91 +18,93 @@ const DEFAULT_FILTERS: TransaksiFilterState = {
 };
 
 export default function TransaksiListPage() {
-  const { data, isLoading } = useTransaksiList(MOCK_KANTOR_ID);
-  const { data: kategoris = [] } = useKategoris(MOCK_KANTOR_ID);
+  const { selectedKantorId } = useKantorSelection();
+  const kantorId = selectedKantorId ?? "";
   const [filters, setFilters] = useState<TransaksiFilterState>(DEFAULT_FILTERS);
   const [formOpen, setFormOpen] = useState(false);
 
-  const filtered = useMemo(() => {
-    if (!data) return [];
-    return data.filter((t: TransaksiWithRelations) => {
-      if (filters.type !== "ALL" && t.type !== filters.type) return false;
-      if (filters.metodeBayar !== "ALL" && t.metodeBayar !== filters.metodeBayar) return false;
-      if (filters.kategoriId && t.kategoriId !== filters.kategoriId) return false;
-      if (filters.search && !t.deskripsi.toLowerCase().includes(filters.search.toLowerCase())) return false;
-      if (filters.tanggalFrom && t.tanggal < filters.tanggalFrom) return false;
-      if (filters.tanggalTo && t.tanggal > filters.tanggalTo) return false;
-      if (filters.nominalMin && t.nominal < Number(filters.nominalMin)) return false;
-      if (filters.nominalMax && t.nominal > Number(filters.nominalMax)) return false;
-      return true;
-    });
-  }, [data, filters]);
+  const { data: apiResult, isLoading } = useTransaksiList(kantorId, {
+    type: filters.type !== "ALL" ? filters.type : undefined,
+    kategoriId: filters.kategoriId || undefined,
+    tanggalFrom: filters.tanggalFrom || undefined,
+    tanggalTo: filters.tanggalTo || undefined,
+    nominalMin: filters.nominalMin || undefined,
+    nominalMax: filters.nominalMax || undefined,
+    search: filters.search || undefined,
+  });
+  const data = apiResult?.data ?? [];
 
-  const totalPemasukan = filtered.filter((t) => t.type === "PEMASUKAN" && t.status !== "CANCELLED").reduce((s, t) => s + t.nominal, 0);
-  const totalPengeluaran = filtered.filter((t) => t.type === "PENGELUARAN" && t.status !== "CANCELLED").reduce((s, t) => s + t.nominal, 0);
+  const { data: kategoris = [] } = useKategoris(kantorId);
+
+  const totalPemasukan = data
+    .filter((t: any) => t.type === "PEMASUKAN" && t.status === "CONFIRMED")
+    .reduce((sum: number, t: any) => sum + t.nominal, 0);
+  const totalPengeluaran = data
+    .filter((t: any) => t.type === "PENGELUARAN" && t.status === "CONFIRMED")
+    .reduce((sum: number, t: any) => sum + t.nominal, 0);
+
+  if (!kantorId) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+        <Receipt className="mb-4 h-12 w-12 opacity-40" />
+        <p className="text-lg font-medium">Pilih kantor terlebih dahulu</p>
+        <p className="text-sm">Gunakan dropdown kantor di bagian atas untuk memulai.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Header */}
+    <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-            <Receipt className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Transaksi</h1>
-            <p className="text-sm text-muted-foreground">Kelola transaksi pemasukan & pengeluaran</p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Transaksi</h1>
+          <p className="text-sm text-muted-foreground">Kelola data pemasukan dan pengeluaran kantor.</p>
         </div>
-        <Button size="sm" onClick={() => setFormOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />Transaksi Baru
+        <Button onClick={() => setFormOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Tambah Transaksi
         </Button>
       </div>
 
       {/* Summary */}
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border p-4">
-          <p className="text-xs text-muted-foreground">Pemasukan</p>
-          <p className="mt-1 text-lg font-bold tabular-nums text-green-600">
-            +{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(totalPemasukan)}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Total Pemasukan</p>
+          <p className="text-xl font-bold text-emerald-600">
+            Rp {totalPemasukan.toLocaleString("id-ID")}
           </p>
         </div>
-        <div className="rounded-xl border p-4">
-          <p className="text-xs text-muted-foreground">Pengeluaran</p>
-          <p className="mt-1 text-lg font-bold tabular-nums text-destructive">
-            -{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(totalPengeluaran)}
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Total Pengeluaran</p>
+          <p className="text-xl font-bold text-red-600">
+            Rp {totalPengeluaran.toLocaleString("id-ID")}
           </p>
         </div>
-        <div className="rounded-xl border p-4">
-          <p className="text-xs text-muted-foreground">Saldo</p>
-          <p className="mt-1 text-lg font-bold tabular-nums">
-            {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(totalPemasukan - totalPengeluaran)}
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Saldo</p>
+          <p className="text-xl font-bold">
+            Rp {(totalPemasukan - totalPengeluaran).toLocaleString("id-ID")}
           </p>
         </div>
       </div>
 
-      {/* Flow clarification */}
-      <div className="rounded-lg border border-dashed border-primary/30 bg-primary/5 px-4 py-2.5">
-        <p className="text-xs text-muted-foreground">
-          Transaksi baru berstatus <span className="font-medium text-foreground">DRAFT</span>. Konfirmasi langsung{" "}
-          <span className="font-medium text-foreground">DRAFT → CONFIRMED</span> (tanpa approval).
-        </p>
-      </div>
-
-      {/* Filter */}
-      <TransaksiFilter filters={filters} onChange={setFilters} kategoris={kategoris} />
-
-      {/* Table */}
       {isLoading ? (
         <div className="space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-14 rounded-xl" />)}
+          <Skeleton className="h-12 rounded-xl" />
+          <Skeleton className="h-64 rounded-xl" />
         </div>
       ) : (
-        <TransaksiTable data={filtered} />
+        <>
+          <TransaksiFilter
+            filters={filters}
+            onChange={setFilters}
+            kategoris={kategoris}
+          />
+          <TransaksiTable data={data} />
+        </>
       )}
 
-      {/* Dialog Form */}
-      <TransaksiForm kantorId={MOCK_KANTOR_ID} open={formOpen} onOpenChange={setFormOpen} />
+      <TransaksiForm kantorId={kantorId} open={formOpen} onOpenChange={setFormOpen} />
     </div>
   );
 }

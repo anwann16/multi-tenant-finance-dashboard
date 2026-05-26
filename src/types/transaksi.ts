@@ -2,7 +2,15 @@ export type TransaksiType = "PEMASUKAN" | "PENGELUARAN";
 export type MetodeBayar = "TUNAI" | "TRANSFER" | "CARD";
 export type TransaksiStatus = "DRAFT" | "CONFIRMED" | "CANCELLED";
 
-export interface Transaksi {
+export interface BuktiTransaksi {
+  id: string;
+  fileName: string;
+  fileUrl: string;
+  fileSize?: number;
+  mimeType?: string;
+}
+
+export interface TransaksiWithRelations {
   id: string;
   kantorId: string;
   userId: string;
@@ -16,11 +24,7 @@ export interface Transaksi {
   rekeningInfo: string | null;
   status: TransaksiStatus;
   isPettyCash: boolean;
-  buktiFiles: string[];
   createdAt: string;
-}
-
-export interface TransaksiWithRelations extends Transaksi {
   kategori: {
     id: string;
     name: string;
@@ -31,6 +35,7 @@ export interface TransaksiWithRelations extends Transaksi {
     id: string;
     name: string;
   };
+  bukti: BuktiTransaksi[];
 }
 
 export interface TransaksiFilterState {
