@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { KantorSchema, UserAssignSchema } from "@/lib/validators";
-import { PAGE_SIZE } from "@/lib/constants";
+import { PAGE_SIZE, DEFAULT_PENGELUARAN_KATEGORI, DEFAULT_PEMASUKAN_KATEGORI } from "@/lib/constants";
 import { Prisma } from "@/generated/prisma/client";
 
 // --- helpers ---
@@ -84,6 +84,27 @@ export async function createKantor(input: {
         role: "ADMIN_KANTOR",
       },
     });
+
+    // Seed default kategori
+    const defaultKategoris = [
+      ...DEFAULT_PENGELUARAN_KATEGORI.map((k) => ({
+        kantorId: kantor.id,
+        name: k.name,
+        type: "PENGELUARAN" as const,
+        icon: k.icon,
+        color: k.color,
+        isDefault: true,
+      })),
+      ...DEFAULT_PEMASUKAN_KATEGORI.map((k) => ({
+        kantorId: kantor.id,
+        name: k.name,
+        type: "PEMASUKAN" as const,
+        icon: k.icon,
+        color: k.color,
+        isDefault: true,
+      })),
+    ];
+    await tx.kategori.createMany({ data: defaultKategoris });
 
     return kantor;
   });

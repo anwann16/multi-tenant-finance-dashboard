@@ -141,14 +141,14 @@
 
 ### T4.1 — Kategori Backend
 
-- [ ] `src/services/kategori.service.ts`:
+- [x] `src/services/kategori.service.ts`:
   - `getKategoris()` (by kantorId + type)
   - `createKategori()`
   - `updateKategori()`
   - `deleteKategori()` (non-default only)
-- [ ] `src/app/api/kategori/route.ts` — GET, POST
-- [ ] `src/app/api/kategori/[id]/route.ts` — PUT, DELETE
-- [ ] Default kategori seed (per kantor saat create kantor baru)
+- [x] `src/app/api/kategori/route.ts` — GET, POST
+- [x] `src/app/api/kategori/[id]/route.ts` — PUT, DELETE
+- [x] Default kategori seed (per kantor saat create kantor baru)
 - [ ] Unit test: kategori.service.test.ts
 
 ### T4.2 — Kategori Frontend

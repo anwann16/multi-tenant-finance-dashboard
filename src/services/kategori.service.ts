@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { KategoriSchema } from "@/lib/validators";
+import { DEFAULT_PENGELUARAN_KATEGORI, DEFAULT_PEMASUKAN_KATEGORI } from "@/lib/constants";
 
 async function requireAuth() {
   const session = await getSession();
@@ -90,4 +91,30 @@ export async function deleteKategori(id: string) {
     where: { id },
     data: { isActive: false },
   });
+}
+
+export async function seedDefaultKategoris(kantorId: string) {
+  const kantor = await prisma.kantor.findUnique({ where: { id: kantorId } });
+  if (!kantor) throw new Error("Kantor not found");
+
+  const allKategoris = [
+    ...DEFAULT_PENGELUARAN_KATEGORI.map((k) => ({
+      kantorId,
+      name: k.name,
+      type: "PENGELUARAN" as const,
+      icon: k.icon,
+      color: k.color,
+      isDefault: true,
+    })),
+    ...DEFAULT_PEMASUKAN_KATEGORI.map((k) => ({
+      kantorId,
+      name: k.name,
+      type: "PEMASUKAN" as const,
+      icon: k.icon,
+      color: k.color,
+      isDefault: true,
+    })),
+  ];
+
+  return prisma.kategori.createMany({ data: allKategoris });
 }

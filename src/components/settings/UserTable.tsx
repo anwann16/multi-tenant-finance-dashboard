@@ -26,10 +26,10 @@ export default function UserTable() {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["admin-users"],
     queryFn: async () => {
-      const res = await fetch("/api/dashboard/admin");
+      const res = await fetch("/api/users");
       if (!res.ok) return [];
       const data = await res.json();
-      return (data?.recentUsers ?? []) as UserProfile[];
+      return (data?.data ?? []) as UserProfile[];
     },
   });
 
