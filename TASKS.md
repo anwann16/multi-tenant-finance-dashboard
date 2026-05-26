@@ -91,7 +91,7 @@
 
 ### T2.1 — Kantor Backend
 
-- [ ] `src/services/kantor.service.ts`:
+- [x] `src/services/kantor.service.ts`:
   - `createKantor()`
   - `getKantors()` (admin: all, finance: assigned)
   - `getKantorById()`
@@ -100,10 +100,10 @@
   - `assignUserToKantor()`
   - `unassignUserFromKantor()`
   - `getKantorUsers()`
-- [ ] `src/app/api/kantor/route.ts` — GET, POST
-- [ ] `src/app/api/kantor/[id]/route.ts` — GET, PUT, DELETE
-- [ ] `src/app/api/kantor/[id]/assign/route.ts` — POST, DELETE
-- [ ] Tenant isolation middleware (check kantorId access)
+- [x] `src/app/api/kantor/route.ts` — GET, POST
+- [x] `src/app/api/kantor/[id]/route.ts` — GET, PUT, DELETE
+- [x] `src/app/api/kantor/[id]/assign/route.ts` — POST, DELETE
+- [x] Tenant isolation middleware (check kantorId access)
 - [ ] Unit test: kantor.service.test.ts
 
 ### T2.2 — Kantor Frontend

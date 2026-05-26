@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { useKantor, useUpdateKantor } from "@/hooks/useKantor";
 import KantorForm from "@/components/kantor/KantorForm";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
 
 export default function KantorEditPage() {
   const params = useParams();
@@ -57,10 +56,7 @@ export default function KantorEditPage() {
           updateKantor.mutate(
             { id, ...data },
             {
-              onSuccess: () => {
-                toast.success("Kantor berhasil diupdate");
-                router.push(`/kantor/${id}`);
-              },
+              onSuccess: () => router.push(`/kantor/${id}`),
             }
           );
         }}

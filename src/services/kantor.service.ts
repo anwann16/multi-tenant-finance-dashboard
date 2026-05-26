@@ -139,6 +139,10 @@ export async function getKantorById(id: string) {
     where: { id, isActive: true },
     include: {
       createdBy: { select: { id: true, name: true, email: true } },
+      userRoles: {
+        where: { isActive: true },
+        include: { user: { select: { id: true, name: true, email: true } } },
+      },
       _count: { select: { userRoles: true, transaksi: true, kategori: true } },
     },
   });
@@ -158,7 +162,7 @@ export async function updateKantor(
   const existing = await prisma.kantor.findUnique({ where: { id } });
   if (!existing || !existing.isActive) throw new Error("Kantor not found");
 
-  return prisma.kantor.update({
+  const updated = await prisma.kantor.update({
     where: { id },
     data: {
       ...(parsed.name !== undefined && { name: parsed.name }),
@@ -167,6 +171,7 @@ export async function updateKantor(
       ...(parsed.pettyCashLimit !== undefined && { pettyCashLimit: parsed.pettyCashLimit }),
     },
   });
+  return updated;
 }
 
 export async function deleteKantor(id: string) {
@@ -177,7 +182,7 @@ export async function deleteKantor(id: string) {
   if (!existing || !existing.isActive) throw new Error("Kantor not found");
 
   // Soft delete: deactivate kantor and all its user roles
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     await tx.kantorUserRole.updateMany({
       where: { kantorId: id },
       data: { isActive: false },
@@ -187,6 +192,7 @@ export async function deleteKantor(id: string) {
       data: { isActive: false },
     });
   });
+  return result;
 }
 
 export async function assignUserToKantor(

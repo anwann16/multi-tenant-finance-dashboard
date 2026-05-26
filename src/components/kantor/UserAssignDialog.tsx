@@ -32,7 +32,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAssignUser, useUnassignUser } from "@/hooks/useKantor";
-import { toast } from "sonner";
 import type { UserKantorRole } from "@/types/kantor";
 
 interface UserAssignDialogProps {
@@ -158,9 +157,12 @@ export default function UserAssignDialog({ kantorId, users }: UserAssignDialogPr
               className="bg-destructive text-white hover:bg-destructive/90"
               onClick={() => {
                 if (removeTarget) {
-                  unassignMutation.mutate(removeTarget.id, {
-                    onSuccess: () => { setRemoveTarget(null); toast.success("User berhasil dihapus"); },
-                  });
+                  unassignMutation.mutate(
+                    { kantorId, userId: removeTarget.userId },
+                    {
+                      onSuccess: () => setRemoveTarget(null),
+                    }
+                  );
                 }
               }}
             >

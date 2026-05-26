@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import { getKantors, createKantor } from "@/services/kantor.service";
+import { jsonResponse } from "@/lib/api-response";
 import { ZodError } from "zod";
 
 export async function GET(request: Request) {
@@ -10,10 +10,10 @@ export async function GET(request: Request) {
     const search = searchParams.get("search") ?? undefined;
 
     const result = await getKantors({ page, limit, search });
-    return NextResponse.json({ success: true, ...result });
+    return jsonResponse({ success: true, ...result });
   } catch (error: any) {
     const status = error.message === "Unauthorized" ? 401 : 500;
-    return NextResponse.json({ success: false, error: error.message }, { status });
+    return jsonResponse({ success: false, error: error.message }, status);
   }
 }
 
@@ -21,17 +21,17 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const kantor = await createKantor(body);
-    return NextResponse.json({ success: true, data: kantor }, { status: 201 });
+    return jsonResponse({ success: true, data: kantor }, 201);
   } catch (error: any) {
     if (error instanceof ZodError) {
-      return NextResponse.json(
+      return jsonResponse(
         { success: false, error: error.issues[0].message },
-        { status: 400 }
+        400
       );
     }
     const status =
       error.message === "Unauthorized" ? 401 :
       error.message.includes("Forbidden") ? 403 : 500;
-    return NextResponse.json({ success: false, error: error.message }, { status });
+    return jsonResponse({ success: false, error: error.message }, status);
   }
 }

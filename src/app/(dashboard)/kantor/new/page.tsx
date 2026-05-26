@@ -6,7 +6,6 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCreateKantor } from "@/hooks/useKantor";
 import KantorForm from "@/components/kantor/KantorForm";
-import { toast } from "sonner";
 
 export default function KantorNewPage() {
   const router = useRouter();
@@ -28,10 +27,7 @@ export default function KantorNewPage() {
       <KantorForm
         onSubmit={(data) => {
           createKantor.mutate(data, {
-            onSuccess: () => {
-              toast.success("Kantor berhasil dibuat");
-              router.push("/kantor");
-            },
+            onSuccess: () => router.push("/kantor"),
           });
         }}
         isLoading={createKantor.isPending}

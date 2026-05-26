@@ -21,7 +21,6 @@ import { useKantor, useDeleteKantor } from "@/hooks/useKantor";
 import UserAssignDialog from "@/components/kantor/UserAssignDialog";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
 
 export default function KantorDetailPage() {
   const params = useParams();
@@ -137,7 +136,7 @@ export default function KantorDetailPage() {
               className="bg-destructive text-white hover:bg-destructive/90"
               onClick={() => {
                 deleteKantor.mutate(id, {
-                  onSuccess: () => { toast.success("Kantor dihapus"); router.push("/kantor"); },
+                  onSuccess: () => router.push("/kantor"),
                 });
               }}
             >
