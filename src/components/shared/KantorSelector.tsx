@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { Building2 } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useKantors } from "@/hooks/useKantor";
 import { useSession } from "@/hooks/useSession";
 import { useKantorSelection } from "@/lib/store";
@@ -22,21 +21,31 @@ export default function KantorSelector() {
 
   if (!isFinance || kantors.length === 0) return null;
 
+  const selectedKantor = kantors.find((k: { id: string; name: string }) => k.id === selectedKantorId);
+
+  if (kantors.length === 1) {
+    return (
+      <div className="hidden items-center gap-1.5 sm:flex">
+        <Building2 className="h-4 w-4 text-muted-foreground" />
+        <span className="text-xs font-medium">{selectedKantor?.name ?? "Kantor"}</span>
+      </div>
+    );
+  }
+
   return (
     <div className="hidden items-center gap-1.5 sm:flex">
       <Building2 className="h-4 w-4 text-muted-foreground" />
-      <Select value={selectedKantorId ?? ""} onValueChange={setSelectedKantorId}>
-        <SelectTrigger className="h-8 w-[180px] text-xs border-border/50 bg-muted/30">
-          <SelectValue placeholder="Pilih kantor" />
-        </SelectTrigger>
-        <SelectContent>
-          {kantors.map((k: { id: string; name: string }) => (
-            <SelectItem key={k.id} value={k.id} className="text-xs">
-              {k.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <select
+        value={selectedKantorId ?? ""}
+        onChange={(e) => setSelectedKantorId(e.target.value)}
+        className="h-8 rounded-lg border border-border/50 bg-muted/30 px-2 text-xs outline-none"
+      >
+        {kantors.map((k: { id: string; name: string }) => (
+          <option key={k.id} value={k.id}>
+            {k.name}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }
