@@ -60,7 +60,7 @@ export async function GET() {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    const [todayTransaksi, monthlyPemasukan, monthlyPengeluaran, recentTransaksi] =
+    const [todayTransaksi, monthlyPemasukan, monthlyPengeluaran, recentTransaksi, saldoGroup] =
       await Promise.all([
         prisma.transaksi.count({
           where: {
@@ -103,12 +103,25 @@ export async function GET() {
             user: { select: { id: true, name: true } },
           },
         }),
+        prisma.transaksi.groupBy({
+          by: ["type"],
+          where: { kantorId: { in: kantorIds }, status: "CONFIRMED" },
+          _sum: { nominal: true },
+        }),
       ]);
+
+    let totalSaldo = 0;
+    for (const r of saldoGroup) {
+      const amount = Number(r._sum.nominal ?? 0);
+      if (r.type === "PEMASUKAN") totalSaldo += amount;
+      else if (r.type === "PENGELUARAN") totalSaldo -= amount;
+    }
 
     return jsonResponse({
       success: true,
       data: {
         kantors,
+        totalSaldo,
         totalPettyCash,
         todayTransaksi,
         monthlyPemasukan: monthlyPemasukan._sum.nominal ?? 0,

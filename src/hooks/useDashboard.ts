@@ -12,6 +12,7 @@ interface AdminDashboardData {
 
 interface UserDashboardData {
   kantors: { id: string; name: string }[];
+  totalSaldo: number;
   totalPettyCash: number;
   todayTransaksi: number;
   monthlyPemasukan: number;

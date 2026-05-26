@@ -129,7 +129,7 @@ function UserDashboard() {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <StatsCard title="Total Saldo" value={formatCurrency(0)} icon={Wallet} gradient="blue" />
+        <StatsCard title="Total Saldo" value={formatCurrency(data?.totalSaldo ?? 0)} icon={Wallet} gradient="blue" />
         <StatsCard title="Transaksi Hari Ini" value={String(data?.todayTransaksi ?? 0)} icon={Receipt} gradient="green" />
         <StatsCard title="Pemasukan Bulan Ini" value={formatCurrency(data?.monthlyPemasukan ?? 0)} icon={ArrowUp} gradient="purple" />
         <StatsCard title="Total Petty Cash" value={formatCurrency(data?.totalPettyCash ?? 0)} icon={Wallet} gradient="amber" />

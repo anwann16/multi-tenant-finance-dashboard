@@ -37,10 +37,10 @@ export default function TransaksiListPage() {
   const { data: kategoris = [] } = useKategoris(kantorId);
 
   const totalPemasukan = data
-    .filter((t: any) => t.type === "PEMASUKAN" && t.status === "CONFIRMED")
+    .filter((t: any) => t.type === "PEMASUKAN")
     .reduce((sum: number, t: any) => sum + t.nominal, 0);
   const totalPengeluaran = data
-    .filter((t: any) => t.type === "PENGELUARAN" && t.status === "CONFIRMED")
+    .filter((t: any) => t.type === "PENGELUARAN")
     .reduce((sum: number, t: any) => sum + t.nominal, 0);
 
   if (!kantorId) {
