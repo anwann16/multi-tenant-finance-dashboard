@@ -62,7 +62,9 @@ export function usePettyCashTopup(kantorId: string) {
         body: JSON.stringify({ kantorId, ...input }),
       }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["pettyCash", kantorId] });
+      qc.invalidateQueries({ queryKey: ["pettyCash", "info", kantorId] });
+      qc.invalidateQueries({ queryKey: ["pettyCash", "log", kantorId] });
+      qc.invalidateQueries({ queryKey: ["pettyCash", "saldo", kantorId] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       toast.success("Top up berhasil");
     },

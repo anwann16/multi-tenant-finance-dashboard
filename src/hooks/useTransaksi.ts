@@ -101,6 +101,9 @@ export function useCreateTransaksi() {
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: ["transaksis", variables.kantorId] });
       qc.invalidateQueries({ queryKey: ["saldo", variables.kantorId] });
+      qc.invalidateQueries({ queryKey: ["pettyCash", "info", variables.kantorId] });
+      qc.invalidateQueries({ queryKey: ["pettyCash", "log", variables.kantorId] });
+      qc.invalidateQueries({ queryKey: ["pettyCash", "saldo", variables.kantorId] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       toast.success("Transaksi berhasil dibuat");
     },
@@ -128,6 +131,9 @@ export function useUpdateTransaksi() {
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: ["transaksi", variables.id] });
       qc.invalidateQueries({ queryKey: ["transaksis", variables.kantorId] });
+      qc.invalidateQueries({ queryKey: ["pettyCash", "info", variables.kantorId] });
+      qc.invalidateQueries({ queryKey: ["pettyCash", "log", variables.kantorId] });
+      qc.invalidateQueries({ queryKey: ["pettyCash", "saldo", variables.kantorId] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       toast.success("Transaksi berhasil diperbarui");
     },
@@ -161,6 +167,9 @@ export function useDeleteTransaksi() {
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: ["transaksis", variables.kantorId] });
       qc.invalidateQueries({ queryKey: ["saldo", variables.kantorId] });
+      qc.invalidateQueries({ queryKey: ["pettyCash", "info", variables.kantorId] });
+      qc.invalidateQueries({ queryKey: ["pettyCash", "log", variables.kantorId] });
+      qc.invalidateQueries({ queryKey: ["pettyCash", "saldo", variables.kantorId] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       toast.success("Transaksi dihapus");
     },
