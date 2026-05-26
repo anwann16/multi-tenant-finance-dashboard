@@ -17,6 +17,7 @@ import {
   Settings,
   ChevronDown,
   Users,
+  User,
 } from "lucide-react";
 
 const allMenuItems = [
@@ -26,29 +27,37 @@ const allMenuItems = [
   { label: "Petty Cash", href: "/petty-cash", icon: Wallet, roles: ["FINANCE"] },
   { label: "Kategori", href: "/kategori", icon: Tag, roles: ["ADMIN", "FINANCE"] },
   { label: "Laporan", href: "/laporan", icon: BarChart3, roles: ["FINANCE"] },
+  { label: "Profile", href: "/settings/profile", icon: User, roles: ["ADMIN", "FINANCE"] },
   {
     label: "Settings",
     href: "/settings",
     icon: Settings,
-    roles: ["ADMIN", "FINANCE"],
+    roles: ["ADMIN"],
     children: [
-      { label: "Users", href: "/settings/users", icon: Users },
+      { label: "Users", href: "/settings/users", icon: Users, roles: ["ADMIN"] },
     ],
   },
 ];
 
 function MobileMenuItem({ item, onNavigate }: { item: (typeof allMenuItems)[number]; onNavigate: () => void }) {
   const pathname = usePathname();
+  const { data: user } = useSession();
+  const role = user?.role ?? "FINANCE";
   const isActive =
     pathname === item.href || pathname.startsWith(item.href + "/");
-  const isChildActive = item.children?.some((child) => pathname === child.href);
+
+  const visibleChildren = item.children?.filter(
+    (child) => (child as { roles?: string[] }).roles?.includes(role) ?? true
+  );
+
+  const isChildActive = visibleChildren?.some((child) => pathname === child.href);
   const [isOpen, setIsOpen] = useState(isChildActive);
 
   useEffect(() => {
     if (isChildActive) setIsOpen(true);
   }, [isChildActive]);
 
-  if (item.children) {
+  if (visibleChildren && visibleChildren.length > 0) {
     return (
       <div className="space-y-1">
         <button
@@ -71,7 +80,7 @@ function MobileMenuItem({ item, onNavigate }: { item: (typeof allMenuItems)[numb
         </button>
         {isOpen && (
           <div className="ml-4 space-y-1">
-            {item.children.map((child) => {
+            {visibleChildren.map((child) => {
               const isChildItemActive = pathname === child.href;
               return (
                 <Link

@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { Shield, ShieldCheck, MoreHorizontal } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -11,13 +12,51 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { UserProfile } from "./mock-data";
+import { Skeleton } from "@/components/ui/skeleton";
 
-interface UserTableProps {
-  users: UserProfile[];
+interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: "ADMIN" | "FINANCE";
+  createdAt: string;
 }
 
-export default function UserTable({ users }: UserTableProps) {
+export default function UserTable() {
+  const { data: users = [], isLoading } = useQuery({
+    queryKey: ["admin-users"],
+    queryFn: async () => {
+      const res = await fetch("/api/dashboard/admin");
+      if (!res.ok) return [];
+      const data = await res.json();
+      return (data?.recentUsers ?? []) as UserProfile[];
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <Card className="border-border/50 shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <Skeleton className="h-5 w-24" />
+          <Skeleton className="h-4 w-16" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-3 rounded-xl border p-3">
+                <Skeleton className="h-9 w-9 rounded-full" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+                <Skeleton className="h-5 w-16 rounded-full" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
   return (
     <Card className="border-border/50 shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -33,7 +72,6 @@ export default function UserTable({ users }: UserTableProps) {
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">User</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Role</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Bergabung</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Terakhir Login</th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground">Aksi</th>
               </tr>
             </thead>
@@ -57,7 +95,6 @@ export default function UserTable({ users }: UserTableProps) {
                       <RoleBadge role={u.role} />
                     </td>
                     <td className="px-4 py-3 text-sm text-muted-foreground">{formatDate(u.createdAt)}</td>
-                    <td className="px-4 py-3 text-sm text-muted-foreground">{formatDate(u.lastLoginAt)}</td>
                     <td className="px-4 py-3 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8" />}>

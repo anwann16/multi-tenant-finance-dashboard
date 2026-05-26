@@ -2,7 +2,6 @@
 
 import { Users } from "lucide-react";
 import UserTable from "@/components/settings/UserTable";
-import { MOCK_USERS } from "@/components/settings/mock-data";
 
 export default function UsersPage() {
   return (
@@ -17,7 +16,7 @@ export default function UsersPage() {
         </div>
       </div>
 
-      <UserTable users={MOCK_USERS} />
+      <UserTable />
     </div>
   );
 }

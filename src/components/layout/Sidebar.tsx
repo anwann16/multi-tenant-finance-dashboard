@@ -17,6 +17,7 @@ import {
   ChevronLeft,
   ChevronDown,
   Users,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -58,12 +59,18 @@ const allMenuItems = [
     roles: ["FINANCE"],
   },
   {
+    label: "Profile",
+    href: "/settings/profile",
+    icon: User,
+    roles: ["ADMIN", "FINANCE"],
+  },
+  {
     label: "Settings",
     href: "/settings",
     icon: Settings,
-    roles: ["ADMIN", "FINANCE"],
+    roles: ["ADMIN"],
     children: [
-      { label: "Users", href: "/settings/users", icon: Users },
+      { label: "Users", href: "/settings/users", icon: Users, roles: ["ADMIN"] },
     ],
   },
 ];
@@ -75,13 +82,19 @@ interface SidebarItemProps {
 
 function SidebarItem({ item, isCollapsed }: SidebarItemProps) {
   const pathname = usePathname();
+  const { data: user } = useSession();
+  const role = user?.role ?? "FINANCE";
   const isActive =
     pathname === item.href ||
     pathname.startsWith(item.href + "/");
 
+  const visibleChildren = item.children?.filter(
+    (child: { label: string; href: string; icon: typeof Users; roles?: string[] }) => child.roles?.includes(role) ?? true
+  );
+
   // Auto-open if any child route is active
-  const isChildActive = item.children?.some(
-    (child: { label: string; href: string; icon: typeof Users }) => pathname === child.href
+  const isChildActive = visibleChildren?.some(
+    (child: { label: string; href: string }) => pathname === child.href
   );
   const [isOpen, setIsOpen] = useState(isChildActive);
 
@@ -90,7 +103,7 @@ function SidebarItem({ item, isCollapsed }: SidebarItemProps) {
     if (isChildActive) setIsOpen(true);
   }, [isChildActive]);
 
-  if (item.children) {
+  if (visibleChildren && visibleChildren.length > 0) {
     return (
       <div className="space-y-1">
         <button
@@ -117,7 +130,7 @@ function SidebarItem({ item, isCollapsed }: SidebarItemProps) {
         </button>
         {!isCollapsed && isOpen && (
           <div className="ml-4 space-y-1">
-            {item.children.map((child: { label: string; href: string; icon: typeof Users }) => {
+            {visibleChildren.map((child: { label: string; href: string; icon: typeof Users }) => {
               const isChildItemActive = pathname === child.href;
               return (
                 <Link
