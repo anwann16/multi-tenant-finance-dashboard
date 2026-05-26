@@ -101,6 +101,7 @@ export function useCreateTransaksi() {
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: ["transaksis", variables.kantorId] });
       qc.invalidateQueries({ queryKey: ["saldo", variables.kantorId] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] });
       toast.success("Transaksi berhasil dibuat");
     },
     onError: (err: Error) => toast.error(err.message),
@@ -127,6 +128,7 @@ export function useUpdateTransaksi() {
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: ["transaksi", variables.id] });
       qc.invalidateQueries({ queryKey: ["transaksis", variables.kantorId] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] });
       toast.success("Transaksi berhasil diperbarui");
     },
     onError: (err: Error) => toast.error(err.message),
@@ -159,6 +161,7 @@ export function useDeleteTransaksi() {
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: ["transaksis", variables.kantorId] });
       qc.invalidateQueries({ queryKey: ["saldo", variables.kantorId] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] });
       toast.success("Transaksi dihapus");
     },
     onError: (err: Error) => toast.error(err.message),
