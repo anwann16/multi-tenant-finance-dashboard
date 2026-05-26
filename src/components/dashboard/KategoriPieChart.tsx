@@ -1,36 +1,40 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { formatCurrency } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const MOCK_DATA = [
-  { name: "Operasional", value: 4500000 },
-  { name: "Makan & Minum", value: 2500000 },
-  { name: "Transport", value: 1800000 },
-  { name: "ATK", value: 1200000 },
-  { name: "Lainnya", value: 800000 },
-];
+interface KategoriDist {
+  name: string;
+  icon: string;
+  color: string;
+  value: number;
+  count: number;
+}
 
-const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#6b7280"];
+const FALLBACK_COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#6b7280", "#ec4899", "#14b8a6", "#f97316"];
 
 function CustomTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
+  const d = payload[0].payload as KategoriDist;
   return (
     <div className="rounded-xl border border-border/50 bg-background/95 p-3 shadow-xl backdrop-blur-sm">
-      <p className="text-xs font-medium text-muted-foreground mb-1">{payload[0].name}</p>
-      <p className="text-sm font-semibold tabular-nums">{formatCurrency(payload[0].value)}</p>
+      <p className="text-xs font-medium text-muted-foreground mb-1">{d.icon} {d.name}</p>
+      <p className="text-sm font-semibold tabular-nums">{formatCurrency(d.value)}</p>
+      <p className="text-xs text-muted-foreground mt-0.5">{d.count} transaksi</p>
     </div>
   );
 }
 
-function CustomLegend() {
+function CustomLegend({ data }: { data: KategoriDist[] }) {
   return (
     <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 pt-4">
-      {MOCK_DATA.map((entry, i) => (
+      {data.map((entry, i) => (
         <div key={entry.name} className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: COLORS[i] }} />
-          <span className="text-xs text-muted-foreground font-medium">{entry.name}</span>
+          <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: entry.color || FALLBACK_COLORS[i % FALLBACK_COLORS.length] }} />
+          <span className="text-xs text-muted-foreground font-medium">{entry.icon} {entry.name}</span>
         </div>
       ))}
     </div>
@@ -38,6 +42,18 @@ function CustomLegend() {
 }
 
 export default function KategoriPieChart() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["dashboard", "charts", "kategori"],
+    queryFn: async () => {
+      const res = await fetch("/api/dashboard/charts?range=bulanan");
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error);
+      return json.data as { trend: any[]; kategoriDist: KategoriDist[] };
+    },
+  });
+
+  const chartData = data?.kategoriDist ?? [];
+
   return (
     <Card className="border-border/50 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-0.5">
       <CardHeader>
@@ -45,28 +61,39 @@ export default function KategoriPieChart() {
       </CardHeader>
       <CardContent>
         <div className="h-[280px] sm:h-[330px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={MOCK_DATA}
-                cx="50%"
-                cy="45%"
-                innerRadius={70}
-                outerRadius={110}
-                paddingAngle={4}
-                dataKey="value"
-                nameKey="name"
-                stroke="none"
-              >
-                {MOCK_DATA.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip content={<CustomTooltip />} />
-            </PieChart>
-          </ResponsiveContainer>
+          {isLoading ? (
+            <Skeleton className="h-full w-full rounded-xl" />
+          ) : chartData.length === 0 ? (
+            <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+              Belum ada data pengeluaran bulan ini
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="45%"
+                  innerRadius={70}
+                  outerRadius={110}
+                  paddingAngle={4}
+                  dataKey="value"
+                  nameKey="name"
+                  stroke="none"
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.color || FALLBACK_COLORS[index % FALLBACK_COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
         </div>
-        <CustomLegend />
+        {chartData.length > 0 && <CustomLegend data={chartData} />}
       </CardContent>
     </Card>
   );

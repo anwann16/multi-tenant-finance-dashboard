@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const MOCK_DATA = [
-  { name: "Jan", pemasukan: 12000000, pengeluaran: 8000000 },
-  { name: "Feb", pemasukan: 14000000, pengeluaran: 10000000 },
-  { name: "Mar", pemasukan: 11000000, pengeluaran: 9000000 },
-  { name: "Apr", pemasukan: 16000000, pengeluaran: 12000000 },
-  { name: "Mei", pemasukan: 18000000, pengeluaran: 11000000 },
-  { name: "Jun", pemasukan: 15000000, pengeluaran: 13000000 },
-];
+interface TrendPoint {
+  name: string;
+  pemasukan: number;
+  pengeluaran: number;
+}
 
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
@@ -31,6 +30,18 @@ function CustomTooltip({ active, payload, label }: any) {
 
 export default function TransaksiChart() {
   const [range, setRange] = useState<"bulanan" | "mingguan" | "harian">("bulanan");
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["dashboard", "charts", range],
+    queryFn: async () => {
+      const res = await fetch(`/api/dashboard/charts?range=${range}`);
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error);
+      return json.data as { trend: TrendPoint[]; kategoriDist: any[] };
+    },
+  });
+
+  const chartData = data?.trend ?? [];
 
   return (
     <Card className="border-border/50 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-0.5">
@@ -65,22 +76,26 @@ export default function TransaksiChart() {
         </div>
 
         <div className="h-[250px] sm:h-[320px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={MOCK_DATA} margin={{ top: 10, right: 10, left: -10, bottom: 0 }} barCategoryGap="20%">
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} dy={10} />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
-                tickFormatter={(v) => `${(v / 1000000).toFixed(0)}jt`}
-                dx={-10}
-              />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted))", opacity: 0.3 }} />
-              <Bar dataKey="pemasukan" name="Pemasukan" fill="#3b82f6" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="pengeluaran" name="Pengeluaran" fill="#f43f5e" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          {isLoading ? (
+            <Skeleton className="h-full w-full rounded-xl" />
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }} barCategoryGap="20%">
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} dy={10} />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+                  tickFormatter={(v) => `${(v / 1000000).toFixed(0)}jt`}
+                  dx={-10}
+                />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted))", opacity: 0.3 }} />
+                <Bar dataKey="pemasukan" name="Pemasukan" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="pengeluaran" name="Pengeluaran" fill="#f43f5e" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </CardContent>
     </Card>
