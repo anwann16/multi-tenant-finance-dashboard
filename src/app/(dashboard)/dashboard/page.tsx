@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { LayoutDashboard, Building2, Users, Wallet, Receipt, ArrowUp, ArrowDown } from "lucide-react";
+import { LayoutDashboard, Building2, Users, Wallet, ArrowUp, ArrowDown } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -128,9 +128,8 @@ function UserDashboard() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard title="Total Saldo" value={formatCurrency(data?.totalSaldo ?? 0)} icon={Wallet} gradient="blue" />
-        <StatsCard title="Transaksi Hari Ini" value={String(data?.todayTransaksi ?? 0)} icon={Receipt} gradient="green" />
         <StatsCard title="Pemasukan Bulan Ini" value={formatCurrency(data?.monthlyPemasukan ?? 0)} icon={ArrowUp} gradient="purple" />
         <StatsCard title="Pengeluaran Bulan Ini" value={formatCurrency(data?.monthlyPengeluaran ?? 0)} icon={ArrowDown} gradient="red" />
         <StatsCard title="Total Petty Cash" value={formatCurrency(data?.totalPettyCash ?? 0)} icon={Wallet} gradient="amber" />
