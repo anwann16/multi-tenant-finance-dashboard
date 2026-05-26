@@ -174,6 +174,36 @@ export async function createTransaksi(
   const tanggal = typeof parsed.tanggal === "string" ? new Date(parsed.tanggal) : parsed.tanggal;
   const nomorTransaksi = await generateNomorTransaksi(input.type, tanggal);
 
+  // Check petty cash balance before deducting
+  let pettyCashSaldo = 0;
+  let pettyCashLimit = 0;
+  if (parsed.isPettyCash && input.type === "PENGELUARAN") {
+    const kantor = await prisma.kantor.findUnique({
+      where: { id: kantorId },
+      select: { pettyCashLimit: true },
+    });
+    pettyCashLimit = Number(kantor?.pettyCashLimit ?? 0);
+
+    const result = await prisma.pettyCashLog.groupBy({
+      by: ["type"],
+      where: { kantorId },
+      _sum: { nominal: true },
+    });
+
+    for (const r of result) {
+      const amount = Number(r._sum.nominal ?? 0);
+      if (r.type === "TOPUP") pettyCashSaldo += amount;
+      else if (r.type === "PENGELUARAN") pettyCashSaldo -= amount;
+    }
+
+    if (pettyCashSaldo <= 0) {
+      throw new Error("Saldo petty cash habis, silakan top up terlebih dahulu");
+    }
+    if (pettyCashSaldo < parsed.nominal) {
+      throw new Error(`Saldo petty cash tidak cukup. Sisa: Rp ${pettyCashSaldo.toLocaleString("id-ID")}`);
+    }
+  }
+
   return prisma.$transaction(async (tx) => {
     const transaksi = await tx.transaksi.create({
       data: {
@@ -194,6 +224,7 @@ export async function createTransaksi(
       },
     });
 
+    let pettyCashAlert: string | null = null;
     if (parsed.isPettyCash && input.type === "PENGELUARAN") {
       await tx.pettyCashLog.create({
         data: {
@@ -205,9 +236,17 @@ export async function createTransaksi(
           createdById: session.user.id,
         },
       });
+
+      // Calculate new balance after deduction using the pre-check saldo
+      const newSaldo = pettyCashSaldo - parsed.nominal;
+      if (pettyCashLimit > 0) {
+        const pct = (newSaldo / pettyCashLimit) * 100;
+        if (pct <= 0) pettyCashAlert = "Saldo petty cash habis! Segera top up.";
+        else if (pct < 30) pettyCashAlert = `Petty cash hampir habis! Sisa ${Math.round(pct)}% dari limit.`;
+      }
     }
 
-    return toTransaksiResponse(transaksi);
+    return { ...toTransaksiResponse(transaksi), pettyCashAlert };
   });
 }
 

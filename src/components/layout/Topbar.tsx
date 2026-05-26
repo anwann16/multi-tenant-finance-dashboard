@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSidebarStore } from "@/lib/store";
 import { useSession } from "@/hooks/useSession";
-import { useKantors } from "@/hooks/useKantor";
 import { authClient } from "@/lib/auth-client";
 import Breadcrumb from "./Breadcrumb";
 import NotificationBell from "./NotificationBell";
@@ -26,11 +25,9 @@ export default function Topbar() {
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
   const { data: user } = useSession();
-  const { data: kantors } = useKantors();
   const queryClient = useQueryClient();
 
   const isFinance = user?.role === "FINANCE";
-  const kantorNames = kantors?.map((k: { name: string }) => k.name) ?? [];
 
   const initials = user?.name
     ?.split(" ")

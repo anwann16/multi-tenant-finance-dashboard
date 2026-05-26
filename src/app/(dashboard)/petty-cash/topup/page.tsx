@@ -13,15 +13,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PettyCashTopupSchema, type PettyCashTopupInput } from "@/lib/validators";
 import { usePettyCashTopup, usePettyCashInfo } from "@/hooks/usePettyCash";
+import { useKantorSelection } from "@/lib/store";
 import { formatCurrency } from "@/lib/utils";
 import { toast } from "sonner";
 
-const MOCK_KANTOR_ID = "k1";
-
 export default function PettyCashTopupPage() {
   const router = useRouter();
-  const topupMutation = usePettyCashTopup(MOCK_KANTOR_ID);
-  const { data: info } = usePettyCashInfo(MOCK_KANTOR_ID);
+  const { selectedKantorId } = useKantorSelection();
+  const kantorId = selectedKantorId ?? "";
+  const topupMutation = usePettyCashTopup(kantorId);
+  const { data: info } = usePettyCashInfo(kantorId);
 
   const form = useForm<PettyCashTopupInput>({
     resolver: zodResolver(PettyCashTopupSchema),
@@ -42,9 +43,17 @@ export default function PettyCashTopupPage() {
 
   const isPending = topupMutation.isPending;
 
+  if (!kantorId) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+        <Wallet className="mb-4 h-12 w-12 opacity-40" />
+        <p className="text-lg font-medium">Pilih kantor terlebih dahulu</p>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-lg space-y-4 sm:space-y-6">
-      {/* Header */}
       <div className="flex items-center gap-3">
         <Link href="/petty-cash">
           <Button variant="ghost" size="icon" className="h-9 w-9">
@@ -52,75 +61,61 @@ export default function PettyCashTopupPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Top Up Petty Cash</h1>
+          <h1 className="text-xl font-bold tracking-tight">Top Up Petty Cash</h1>
           <p className="text-sm text-muted-foreground">Tambah saldo petty cash kantor</p>
         </div>
       </div>
 
-      {/* Current Saldo */}
-      {info && (
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <Wallet className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Saldo Saat Ini</p>
-                <p className="text-lg font-bold tabular-nums">{formatCurrency(info.saldo)}</p>
-              </div>
-              <div className="ml-auto text-right">
-                <p className="text-xs text-muted-foreground">Limit</p>
-                <p className="text-sm font-medium tabular-nums">{formatCurrency(info.limit)}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm text-muted-foreground">Saldo Saat Ini</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-2xl font-bold">{formatCurrency(info?.saldo ?? 0)}</p>
+          <p className="text-sm text-muted-foreground">dari limit {formatCurrency(info?.limit ?? 0)}</p>
+        </CardContent>
+      </Card>
 
-      {/* Form */}
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Detail Top Up</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0 space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Form Top Up</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="nominal">Nominal Top Up (Rp)</Label>
+              <Label htmlFor="nominal">Nominal</Label>
               <Input
                 id="nominal"
                 type="number"
-                placeholder="0"
+                placeholder="Masukkan nominal"
                 {...form.register("nominal", { valueAsNumber: true })}
               />
               {form.formState.errors.nominal && (
-                <p className="text-sm text-destructive">{form.formState.errors.nominal.message}</p>
+                <p className="text-xs text-destructive">{form.formState.errors.nominal.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="deskripsi">Deskripsi (opsional)</Label>
+              <Label htmlFor="deskripsi">Keterangan (opsional)</Label>
               <Textarea
                 id="deskripsi"
-                placeholder="Contoh: Top up petty cash bulanan"
+                placeholder="Top up untuk..."
                 rows={2}
                 {...form.register("deskripsi")}
               />
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Actions */}
-        <div className="flex justify-center gap-2 pb-4 sm:justify-end">
-          <Link href="/petty-cash">
-            <Button type="button" variant="outline">Batal</Button>
-          </Link>
-          <Button type="submit" disabled={isPending}>
-            <Save className="mr-2 h-4 w-4" />
-            {isPending ? "Menyimpan..." : "Top Up Sekarang"}
-          </Button>
-        </div>
-      </form>
+            <div className="flex gap-3 pt-2">
+              <Link href="/petty-cash" className="flex-1">
+                <Button type="button" variant="outline" className="w-full">Batal</Button>
+              </Link>
+              <Button type="submit" className="flex-1" disabled={isPending}>
+                {isPending ? "Menyimpan..." : <><Save className="mr-2 h-4 w-4" />Top Up</>}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

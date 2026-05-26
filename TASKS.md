@@ -225,15 +225,15 @@
 
 ### T6.1 — Petty Cash Backend
 
-- [ ] `src/services/petty-cash.service.ts`:
+- [x] `src/services/petty-cash.service.ts`:
   - `getPettyCashInfo()` — Current saldo + limit
   - `topUpPettyCash()` — Add funds (log TOPUP)
   - `getPettyCashLog()` — History of movements
   - `getPettyCashSaldo()` — Real-time balance
-- [ ] Update `transaksi.service.ts` — Auto deduct on confirm if isPettyCash
-- [ ] `src/app/api/petty-cash/route.ts` — GET
-- [ ] `src/app/api/petty-cash/topup/route.ts` — POST
-- [ ] Alert threshold logic (sal < 30% limit)
+- [x] Update `transaksi.service.ts` — Auto deduct on confirm if isPettyCash
+- [x] `src/app/api/petty-cash/route.ts` — GET
+- [x] `src/app/api/petty-cash/topup/route.ts` — POST
+- [x] Alert threshold logic (sal < 30% limit)
 - [ ] Unit test: petty-cash.service.test.ts
 
 ### T6.2 — Petty Cash Frontend
@@ -243,7 +243,7 @@
 - [x] `src/components/petty-cash/PettyCashWidget.tsx` — Saldo card
 - [x] `src/components/petty-cash/PettyCashLog.tsx` — Movement history
 - [x] `src/components/petty-cash/PettyCashProgress.tsx` — Bar progress (saldo vs limit)
-- [x] `src/hooks/usePettyCash.ts`
+- [x] `src/hooks/usePettyCash.ts` — Wired to real API
 - [x] First commit: `feat(petty-cash): tracking + top-up + alerts`
 
 ---
