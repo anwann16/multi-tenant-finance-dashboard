@@ -165,7 +165,7 @@
 
 ### T5.1 — Transaksi Backend
 
-- [ ] `src/services/transaksi.service.ts`:
+- [x] `src/services/transaksi.service.ts`:
   - `createTransaksi()` — Generate nomor, save
   - `getTransaksiList()` — Filter, paginate, search
   - `getTransaksiById()` — Detail + bukti
@@ -176,10 +176,10 @@
   - `generateNomorTransaksi()` — Auto nomor per bulan
   - `getSaldoKantor()` — Calculate balance
   - `getRunningBalance()` — Balance after each transaction
-- [ ] `src/app/api/transaksi/route.ts` — GET, POST
-- [ ] `src/app/api/transaksi/[id]/route.ts` — GET, PUT, DELETE
-- [ ] `src/app/api/transaksi/[id]/confirm/route.ts` — POST
-- [ ] Transaction atomicity (Prisma $transaction)
+- [x] `src/app/api/transaksi/route.ts` — GET, POST
+- [x] `src/app/api/transaksi/[id]/route.ts` — GET, PUT, DELETE
+- [x] `src/app/api/transaksi/[id]/confirm/route.ts` — POST
+- [x] Transaction atomicity (Prisma $transaction)
 - [ ] Unit test: transaksi.service.test.ts (CRUD, nomor gen, saldo calc)
 
 ### T5.2 — Transaksi Frontend — Form
