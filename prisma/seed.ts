@@ -34,18 +34,18 @@ async function main() {
 
   // 1. Create users
   const usersData = [
-    { name: "Super Admin", email: "superadmin@kantor.com" },
-    { name: "Admin Utama", email: "admin@kantor.com" },
-    { name: "Andi Kurniawan", email: "andi@kantor.com" },
-    { name: "Sari Dewi", email: "sari@kantor.com" },
+    { name: "Super Admin", email: "superadmin@kantor.com", role: "ADMIN" as const },
+    { name: "Admin Utama", email: "admin@kantor.com", role: "ADMIN" as const },
+    { name: "Andi Kurniawan", email: "andi@kantor.com", role: "FINANCE" as const },
+    { name: "Sari Dewi", email: "sari@kantor.com", role: "FINANCE" as const },
   ];
 
   const users: { id: string; email: string; name: string }[] = [];
   for (const u of usersData) {
     const user = await prisma.user.upsert({
       where: { email: u.email },
-      update: {},
-      create: { name: u.name, email: u.email },
+      update: { role: u.role },
+      create: { name: u.name, email: u.email, role: u.role },
     });
     users.push(user);
     console.log("User:", user.name, user.email);
